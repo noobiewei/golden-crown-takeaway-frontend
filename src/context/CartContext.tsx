@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { MenuItem } from '../types';
 
 export interface CartLine {
@@ -16,9 +16,23 @@ interface CartContextValue {
 }
 
 const CartContext = createContext<CartContextValue | undefined>(undefined);
+const STORAGE_KEY = 'goldencrown-cart';
+
+function loadCartFromStorage(): CartLine[] {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [lines, setLines] = useState<CartLine[]>([]);
+  const [lines, setLines] = useState<CartLine[]>(loadCartFromStorage);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(lines));
+  }, [lines]);
 
   function addToCart(item: MenuItem) {
     setLines((current) => {
