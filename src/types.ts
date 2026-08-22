@@ -25,6 +25,7 @@ export interface OrderItemLine {
   menuItem: MenuItem;
   quantity: number;
   priceAtOrder: number;
+  note: string | null;
 }
 
 export interface Order {
@@ -34,6 +35,7 @@ export interface Order {
   orderType: OrderType;
   deliveryAddress: string | null;
   deliveryPostcode: string | null;
+  specialInstructions: string | null;
   deliveryFee: number;
   status: OrderStatus;
   createdAt: string;

@@ -27,14 +27,22 @@ export default function ConfirmationPage() {
       <div className="bg-white rounded-xl shadow-sm border border-black/5 p-5 text-left">
         <ul className="divide-y divide-black/5">
           {order.items.map((line) => (
-            <li key={line.id} className="flex justify-between py-2 text-sm">
-              <span>
-                {line.menuItem.name} <span className="text-brand-ink/50">x{line.quantity}</span>
-              </span>
-              <span className="font-medium">£{(line.priceAtOrder * line.quantity).toFixed(2)}</span>
+            <li key={line.id} className="py-2 text-sm">
+              <div className="flex justify-between">
+                <span>
+                  {line.menuItem.name} <span className="text-brand-ink/50">x{line.quantity}</span>
+                </span>
+                <span className="font-medium">£{(line.priceAtOrder * line.quantity).toFixed(2)}</span>
+              </div>
+              {line.note && <p className="text-brand-ink/50 text-xs mt-0.5">Note: {line.note}</p>}
             </li>
           ))}
         </ul>
+        {order.specialInstructions && (
+          <p className="text-brand-ink/60 text-xs pt-2 mt-1 border-t border-black/5">
+            Special instructions: {order.specialInstructions}
+          </p>
+        )}
         {order.deliveryFee > 0 && (
           <>
             <div className="flex justify-between pt-3 mt-1 border-t border-black/5 text-sm">

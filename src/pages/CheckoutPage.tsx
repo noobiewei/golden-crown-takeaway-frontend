@@ -15,7 +15,7 @@ const inputClasses =
   'w-full rounded-md border border-black/10 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-gold';
 
 export default function CheckoutPage() {
-  const { lines, totalPrice, clearCart } = useCart();
+  const { lines, totalPrice, clearCart, specialInstructions } = useCart();
   const navigate = useNavigate();
   const [form, setForm] = useState<FormState>({
     customerName: '',
@@ -55,7 +55,12 @@ export default function CheckoutPage() {
           orderType: form.orderType,
           deliveryAddress: form.orderType === 'DELIVERY' ? form.deliveryAddress : null,
           deliveryPostcode: form.orderType === 'DELIVERY' ? form.deliveryPostcode : null,
-          items: lines.map((line) => ({ menuItemId: line.item.id, quantity: line.quantity })),
+          specialInstructions: specialInstructions.trim() || null,
+          items: lines.map((line) => ({
+            menuItemId: line.item.id,
+            quantity: line.quantity,
+            note: line.note.trim() || null,
+          })),
         }),
       });
 
@@ -81,14 +86,22 @@ export default function CheckoutPage() {
       <div className="bg-white rounded-xl shadow-sm border border-black/5 p-5 mb-6">
         <ul className="divide-y divide-black/5">
           {lines.map((line) => (
-            <li key={line.item.id} className="flex justify-between py-2 text-sm">
-              <span>
-                {line.item.name} <span className="text-brand-ink/50">x{line.quantity}</span>
-              </span>
-              <span className="font-medium">£{(line.item.price * line.quantity).toFixed(2)}</span>
+            <li key={line.item.id} className="py-2 text-sm">
+              <div className="flex justify-between">
+                <span>
+                  {line.item.name} <span className="text-brand-ink/50">x{line.quantity}</span>
+                </span>
+                <span className="font-medium">£{(line.item.price * line.quantity).toFixed(2)}</span>
+              </div>
+              {line.note.trim() && <p className="text-brand-ink/50 text-xs mt-0.5">Note: {line.note.trim()}</p>}
             </li>
           ))}
         </ul>
+        {specialInstructions.trim() && (
+          <p className="text-brand-ink/60 text-xs pt-2 mt-1 border-t border-black/5">
+            Special instructions: {specialInstructions.trim()}
+          </p>
+        )}
         <div className="flex justify-between pt-3 mt-1 border-t border-black/5 text-sm">
           <span className="text-brand-ink/70">Subtotal</span>
           <span>£{totalPrice.toFixed(2)}</span>
