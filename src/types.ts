@@ -15,3 +15,25 @@ export interface MenuItem {
   spicy: boolean;
   containsNuts: boolean;
 }
+
+export type OrderType = 'PICKUP' | 'DELIVERY';
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+
+export interface OrderItemLine {
+  id: number;
+  menuItem: MenuItem;
+  quantity: number;
+  priceAtOrder: number;
+}
+
+export interface Order {
+  id: number;
+  customerName: string;
+  customerPhone: string;
+  orderType: OrderType;
+  deliveryAddress: string | null;
+  status: OrderStatus;
+  createdAt: string;
+  totalPrice: number;
+  items: OrderItemLine[];
+}

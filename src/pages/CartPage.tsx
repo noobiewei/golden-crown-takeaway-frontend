@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
 export default function CartPage() {
@@ -30,6 +31,7 @@ export default function CartPage() {
       <p>
         <strong>Total: £{totalPrice.toFixed(2)}</strong>
       </p>
+      <Link to="/checkout">Proceed to Checkout</Link>
     </div>
   );
 }

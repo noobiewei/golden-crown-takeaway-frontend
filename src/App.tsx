@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { CartProvider, useCart } from './context/CartContext';
 import MenuPage from './pages/MenuPage';
 import CartPage from './pages/CartPage';
+import CheckoutPage from './pages/CheckoutPage';
+import ConfirmationPage from './pages/ConfirmationPage';
 import './App.css';
 
 function Header() {
@@ -21,6 +23,8 @@ function App() {
         <Routes>
           <Route path="/" element={<MenuPage />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/confirmation" element={<ConfirmationPage />} />
         </Routes>
       </CartProvider>
     </BrowserRouter>
