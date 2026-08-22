@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, NavLink, Link } from 'react-router-dom';
 import { CartProvider, useCart } from './context/CartContext';
 import CrownIcon from './components/CrownIcon';
 import MenuPage from './pages/MenuPage';
@@ -37,12 +37,26 @@ function Header() {
               </span>
             )}
           </NavLink>
-          <NavLink to="/contact" className={navLinkClasses}>
-            Contact
-          </NavLink>
         </nav>
       </div>
     </header>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="bg-brand-ink text-brand-cream/70 mt-auto">
+      <div className="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <p className="font-display text-brand-cream text-lg">
+          Golden Crown <span className="text-brand-gold">Takeaway</span> 金冠
+        </p>
+        <nav className="flex items-center gap-6 text-sm">
+          <Link to="/" className="hover:text-brand-cream transition-colors">Menu</Link>
+          <Link to="/contact" className="hover:text-brand-cream transition-colors">Contact &amp; About</Link>
+        </nav>
+        <p className="text-xs">&copy; {new Date().getFullYear()} Golden Crown Takeaway</p>
+      </div>
+    </footer>
   );
 }
 
@@ -61,6 +75,7 @@ function App() {
               <Route path="/contact" element={<ContactPage />} />
             </Routes>
           </main>
+          <Footer />
         </div>
       </CartProvider>
     </BrowserRouter>
