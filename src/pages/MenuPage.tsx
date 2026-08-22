@@ -57,7 +57,9 @@ export default function MenuPage() {
 
   return (
     <div>
-      {!trimmedQuery && <Hero menuAnchorId={categoriesInOrder[0] ? `category-${categoriesInOrder[0].id}` : undefined} />}
+      {!trimmedQuery && (
+        <Hero menuAnchorId={categoriesInOrder[0] ? `category-${categoriesInOrder[0].id}` : undefined} />
+      )}
 
       <input
         type="search"

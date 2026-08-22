@@ -1,12 +1,15 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { estimateDeliveryFee } from '../lib/deliveryFee';
+import type { DeliveryZone } from '../types';
 
 interface FormState {
   customerName: string;
   customerPhone: string;
   orderType: 'PICKUP' | 'DELIVERY';
   deliveryAddress: string;
+  deliveryZone: DeliveryZone | '';
 }
 
 const inputClasses =
@@ -20,6 +23,7 @@ export default function CheckoutPage() {
     customerPhone: '',
     orderType: 'PICKUP',
     deliveryAddress: '',
+    deliveryZone: '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,6 +35,13 @@ export default function CheckoutPage() {
   function handleChange(field: keyof FormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
+
+  const deliveryFee = estimateDeliveryFee(
+    form.orderType,
+    form.deliveryZone || null,
+    totalPrice
+  );
+  const grandTotal = totalPrice + deliveryFee;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -46,6 +57,7 @@ export default function CheckoutPage() {
           customerPhone: form.customerPhone,
           orderType: form.orderType,
           deliveryAddress: form.orderType === 'DELIVERY' ? form.deliveryAddress : null,
+          deliveryZone: form.orderType === 'DELIVERY' ? form.deliveryZone : null,
           items: lines.map((line) => ({ menuItemId: line.item.id, quantity: line.quantity })),
         }),
       });
@@ -79,13 +91,23 @@ export default function CheckoutPage() {
             </li>
           ))}
         </ul>
-        <div className="flex justify-between pt-3 mt-1 border-t border-black/5 font-display font-bold text-lg">
-          <span>Total</span>
+        <div className="flex justify-between pt-3 mt-1 border-t border-black/5 text-sm">
+          <span className="text-brand-ink/70">Subtotal</span>
           <span>£{totalPrice.toFixed(2)}</span>
+        </div>
+        {form.orderType === 'DELIVERY' && (
+          <div className="flex justify-between pt-1 text-sm">
+            <span className="text-brand-ink/70">Delivery fee</span>
+            <span>{form.deliveryZone ? `£${deliveryFee.toFixed(2)}` : 'Select a delivery zone below'}</span>
+          </div>
+        )}
+        <div className="flex justify-between pt-2 mt-1 border-t border-black/5 font-display font-bold text-lg">
+          <span>Total</span>
+          <span>£{grandTotal.toFixed(2)}</span>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-black/5 p-5 space-y-4">
+      <form onSubmit={handleSubmit} autoComplete="off" className="bg-white rounded-xl shadow-sm border border-black/5 p-5 space-y-4">
         <label className="block">
           <span className="block text-sm font-medium text-brand-ink/70 mb-1">Name</span>
           <input
@@ -134,16 +156,51 @@ export default function CheckoutPage() {
         </fieldset>
 
         {form.orderType === 'DELIVERY' && (
-          <label className="block">
-            <span className="block text-sm font-medium text-brand-ink/70 mb-1">Delivery address</span>
-            <input
-              type="text"
-              required
-              value={form.deliveryAddress}
-              onChange={(e) => handleChange('deliveryAddress', e.target.value)}
-              className={inputClasses}
-            />
-          </label>
+          <>
+            <label className="block">
+              <span className="block text-sm font-medium text-brand-ink/70 mb-1">Delivery address</span>
+              <input
+                type="text"
+                required
+                value={form.deliveryAddress}
+                onChange={(e) => handleChange('deliveryAddress', e.target.value)}
+                className={inputClasses}
+              />
+            </label>
+
+            <fieldset>
+              <legend className="block text-sm font-medium text-brand-ink/70 mb-2">
+                How far is your delivery address?
+              </legend>
+              <div className="flex gap-3">
+                {(
+                  [
+                    ['WITHIN_3_MILES', 'Within 3 miles'],
+                    ['OVER_3_MILES', 'Over 3 miles'],
+                  ] as const
+                ).map(([zone, label]) => (
+                  <label
+                    key={zone}
+                    className={`flex-1 text-center cursor-pointer rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                      form.deliveryZone === zone
+                        ? 'bg-brand-green text-white border-brand-green'
+                        : 'border-black/10 text-brand-ink/70 hover:bg-black/5'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="deliveryZone"
+                      required
+                      className="sr-only"
+                      checked={form.deliveryZone === zone}
+                      onChange={() => handleChange('deliveryZone', zone)}
+                    />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          </>
         )}
 
         {error && <p className="text-sm text-red-600">{error}</p>}
@@ -153,7 +210,7 @@ export default function CheckoutPage() {
           disabled={submitting}
           className="w-full bg-brand-green text-white font-medium py-2.5 rounded-full hover:bg-brand-green-dark transition-colors disabled:opacity-50"
         >
-          {submitting ? 'Placing order...' : 'Place Order'}
+          {submitting ? 'Placing order...' : `Place Order · £${grandTotal.toFixed(2)}`}
         </button>
       </form>
     </div>

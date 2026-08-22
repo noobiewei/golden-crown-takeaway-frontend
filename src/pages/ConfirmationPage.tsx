@@ -35,7 +35,19 @@ export default function ConfirmationPage() {
             </li>
           ))}
         </ul>
-        <div className="flex justify-between pt-3 mt-1 border-t border-black/5 font-display font-bold text-lg">
+        {order.deliveryFee > 0 && (
+          <>
+            <div className="flex justify-between pt-3 mt-1 border-t border-black/5 text-sm">
+              <span className="text-brand-ink/70">Subtotal</span>
+              <span>£{(order.totalPrice - order.deliveryFee).toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between pt-1 text-sm">
+              <span className="text-brand-ink/70">Delivery fee</span>
+              <span>£{order.deliveryFee.toFixed(2)}</span>
+            </div>
+          </>
+        )}
+        <div className="flex justify-between pt-2 mt-1 border-t border-black/5 font-display font-bold text-lg">
           <span>Total</span>
           <span>£{order.totalPrice.toFixed(2)}</span>
         </div>
