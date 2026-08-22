@@ -2,14 +2,13 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { estimateDeliveryFee } from '../lib/deliveryFee';
-import type { DeliveryZone } from '../types';
 
 interface FormState {
   customerName: string;
   customerPhone: string;
   orderType: 'PICKUP' | 'DELIVERY';
   deliveryAddress: string;
-  deliveryZone: DeliveryZone | '';
+  deliveryPostcode: string;
 }
 
 const inputClasses =
@@ -23,7 +22,7 @@ export default function CheckoutPage() {
     customerPhone: '',
     orderType: 'PICKUP',
     deliveryAddress: '',
-    deliveryZone: '',
+    deliveryPostcode: '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,11 +35,7 @@ export default function CheckoutPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   }
 
-  const deliveryFee = estimateDeliveryFee(
-    form.orderType,
-    form.deliveryZone || null,
-    totalPrice
-  );
+  const deliveryFee = estimateDeliveryFee(form.orderType, form.deliveryPostcode);
   const grandTotal = totalPrice + deliveryFee;
   const MINIMUM_DELIVERY_ORDER = 15;
   const belowDeliveryMinimum = form.orderType === 'DELIVERY' && totalPrice < MINIMUM_DELIVERY_ORDER;
@@ -59,7 +54,7 @@ export default function CheckoutPage() {
           customerPhone: form.customerPhone,
           orderType: form.orderType,
           deliveryAddress: form.orderType === 'DELIVERY' ? form.deliveryAddress : null,
-          deliveryZone: form.orderType === 'DELIVERY' ? form.deliveryZone : null,
+          deliveryPostcode: form.orderType === 'DELIVERY' ? form.deliveryPostcode : null,
           items: lines.map((line) => ({ menuItemId: line.item.id, quantity: line.quantity })),
         }),
       });
@@ -101,7 +96,7 @@ export default function CheckoutPage() {
         {form.orderType === 'DELIVERY' && (
           <div className="flex justify-between pt-1 text-sm">
             <span className="text-brand-ink/70">Delivery fee</span>
-            <span>{form.deliveryZone ? `£${deliveryFee.toFixed(2)}` : 'Select a delivery zone below'}</span>
+            <span>{form.deliveryPostcode.trim() ? `£${deliveryFee.toFixed(2)}` : 'Enter your postcode below'}</span>
           </div>
         )}
         <div className="flex justify-between pt-2 mt-1 border-t border-black/5 font-display font-bold text-lg">
@@ -172,44 +167,24 @@ export default function CheckoutPage() {
               <input
                 type="text"
                 required
+                placeholder="House number and street"
                 value={form.deliveryAddress}
                 onChange={(e) => handleChange('deliveryAddress', e.target.value)}
                 className={inputClasses}
               />
             </label>
 
-            <fieldset>
-              <legend className="block text-sm font-medium text-brand-ink/70 mb-2">
-                How far is your delivery address?
-              </legend>
-              <div className="flex gap-3">
-                {(
-                  [
-                    ['WITHIN_3_MILES', 'Within 3 miles'],
-                    ['OVER_3_MILES', 'Over 3 miles'],
-                  ] as const
-                ).map(([zone, label]) => (
-                  <label
-                    key={zone}
-                    className={`flex-1 text-center cursor-pointer rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
-                      form.deliveryZone === zone
-                        ? 'bg-brand-green text-white border-brand-green'
-                        : 'border-black/10 text-brand-ink/70 hover:bg-black/5'
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      name="deliveryZone"
-                      required
-                      className="sr-only"
-                      checked={form.deliveryZone === zone}
-                      onChange={() => handleChange('deliveryZone', zone)}
-                    />
-                    {label}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
+            <label className="block">
+              <span className="block text-sm font-medium text-brand-ink/70 mb-1">Postcode</span>
+              <input
+                type="text"
+                required
+                placeholder="e.g. WD24 5BH"
+                value={form.deliveryPostcode}
+                onChange={(e) => handleChange('deliveryPostcode', e.target.value)}
+                className={inputClasses}
+              />
+            </label>
           </>
         )}
 
