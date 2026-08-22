@@ -26,9 +26,9 @@ export default function ContactPage() {
         <div>
           <h2 className="font-display text-lg font-bold text-brand-ink mb-1">Delivery</h2>
           <ul className="text-brand-ink/70 space-y-0.5 text-sm">
-            <li>£1.30 delivery charge for orders over £15, within 3 miles</li>
-            <li>£2.00 delivery charge for orders under £15, within 3 miles</li>
-            <li>£3.00 delivery charge for orders over 3 miles</li>
+            <li>£15 minimum order for delivery</li>
+            <li>£1.30 delivery charge for most areas</li>
+            <li>£3.00 delivery charge for some further-away postcodes</li>
             <li>Free prawn crackers or a bottle of soft drink for orders over £55</li>
           </ul>
         </div>
