@@ -42,6 +42,8 @@ export default function CheckoutPage() {
     totalPrice
   );
   const grandTotal = totalPrice + deliveryFee;
+  const MINIMUM_DELIVERY_ORDER = 15;
+  const belowDeliveryMinimum = form.orderType === 'DELIVERY' && totalPrice < MINIMUM_DELIVERY_ORDER;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -63,7 +65,8 @@ export default function CheckoutPage() {
       });
 
       if (!response.ok) {
-        throw new Error(`Order failed: ${response.status}`);
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error ?? `Order failed: ${response.status}`);
       }
 
       const order = await response.json();
@@ -106,6 +109,13 @@ export default function CheckoutPage() {
           <span>£{grandTotal.toFixed(2)}</span>
         </div>
       </div>
+
+      {belowDeliveryMinimum && (
+        <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2 mb-6">
+          Minimum order for delivery is £{MINIMUM_DELIVERY_ORDER.toFixed(2)} — add £
+          {(MINIMUM_DELIVERY_ORDER - totalPrice).toFixed(2)} more, or switch to pickup.
+        </p>
+      )}
 
       <form onSubmit={handleSubmit} autoComplete="off" className="bg-white rounded-xl shadow-sm border border-black/5 p-5 space-y-4">
         <label className="block">
@@ -207,7 +217,7 @@ export default function CheckoutPage() {
 
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || belowDeliveryMinimum}
           className="w-full bg-brand-green text-white font-medium py-2.5 rounded-full hover:bg-brand-green-dark transition-colors disabled:opacity-50"
         >
           {submitting ? 'Placing order...' : `Place Order · £${grandTotal.toFixed(2)}`}
