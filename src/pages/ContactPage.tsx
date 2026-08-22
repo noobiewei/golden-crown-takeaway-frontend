@@ -18,7 +18,9 @@ export default function ContactPage() {
 
         <div>
           <h2 className="font-display text-lg font-bold text-brand-ink mb-1">Opening Hours</h2>
-          <p className="text-brand-ink/50 italic">Coming soon — let us know your actual hours to fill this in.</p>
+          <p className="text-brand-ink/50 italic">Monday: Closed</p>
+          <p className="text-brand-ink/50 italic">Tuesday - Saturday: 5pm - 11pm</p>
+          <p className="text-brand-ink/50 italic">Sunday/ Bank Holodays: 5pm - 10:30pm</p>
         </div>
 
         <div>
