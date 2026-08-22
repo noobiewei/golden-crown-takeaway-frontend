@@ -12,7 +12,7 @@ function Header() {
   const { totalItems } = useCart();
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-    `px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+    `px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors ${
       isActive
         ? 'bg-brand-gold text-brand-ink'
         : 'text-brand-cream hover:bg-white/10'
@@ -20,13 +20,17 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-10 bg-brand-green shadow-md">
-      <div className="max-w-5xl mx-auto flex items-center justify-between px-6 py-4">
-        <NavLink to="/" className="flex items-center gap-2 font-display text-2xl font-bold text-brand-cream tracking-wide">
-          <CrownIcon className="w-7 h-7 text-brand-gold" />
-          Golden Crown <span className="text-brand-gold">Takeaway</span>
-          <span className="text-brand-gold/80 text-xl font-normal ml-1">金冠</span>
+      <div className="max-w-5xl mx-auto flex items-center justify-between gap-2 px-4 sm:px-6 py-3 sm:py-4">
+        <NavLink
+          to="/"
+          className="flex items-center gap-1.5 sm:gap-2 font-display text-base sm:text-2xl font-bold text-brand-cream tracking-wide shrink-0 min-w-0"
+        >
+          <CrownIcon className="w-5 h-5 sm:w-7 sm:h-7 text-brand-gold shrink-0" />
+          <span className="truncate">Golden Crown</span>
+          <span className="text-brand-gold hidden sm:inline">Takeaway</span>
+          <span className="text-brand-gold/80 text-xl font-normal ml-1 hidden sm:inline">金冠</span>
         </NavLink>
-        <nav className="flex items-center gap-2">
+        <nav className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <NavLink to="/" end className={navLinkClasses}>
             Menu
           </NavLink>

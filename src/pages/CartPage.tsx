@@ -47,13 +47,13 @@ export default function CartPage() {
         ))}
       </div>
 
-      <div className="flex items-center justify-between mt-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6">
         <span className="font-display text-xl font-bold text-brand-ink">
           Total: £{totalPrice.toFixed(2)}
         </span>
         <Link
           to="/checkout"
-          className="bg-brand-green text-white font-medium px-6 py-2.5 rounded-full hover:bg-brand-green-dark transition-colors"
+          className="bg-brand-green text-white font-medium px-6 py-2.5 rounded-full hover:bg-brand-green-dark transition-colors text-center whitespace-nowrap"
         >
           Proceed to Checkout
         </Link>
