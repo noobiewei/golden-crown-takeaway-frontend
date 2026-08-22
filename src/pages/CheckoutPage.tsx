@@ -66,7 +66,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-xl mx-auto">
-      <h1 className="font-display text-3xl font-bold text-brand-red mb-6">Checkout</h1>
+      <h1 className="font-display text-3xl font-bold text-brand-green mb-6">Checkout</h1>
 
       <div className="bg-white rounded-xl shadow-sm border border-black/5 p-5 mb-6">
         <ul className="divide-y divide-black/5">
@@ -116,7 +116,7 @@ export default function CheckoutPage() {
                 key={type}
                 className={`flex-1 text-center cursor-pointer rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
                   form.orderType === type
-                    ? 'bg-brand-red text-white border-brand-red'
+                    ? 'bg-brand-green text-white border-brand-green'
                     : 'border-black/10 text-brand-ink/70 hover:bg-black/5'
                 }`}
               >
@@ -151,7 +151,7 @@ export default function CheckoutPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full bg-brand-red text-white font-medium py-2.5 rounded-full hover:bg-brand-red-dark transition-colors disabled:opacity-50"
+          className="w-full bg-brand-green text-white font-medium py-2.5 rounded-full hover:bg-brand-green-dark transition-colors disabled:opacity-50"
         >
           {submitting ? 'Placing order...' : 'Place Order'}
         </button>

@@ -19,7 +19,7 @@ function Header() {
     }`;
 
   return (
-    <header className="sticky top-0 z-10 bg-brand-red shadow-md">
+    <header className="sticky top-0 z-10 bg-brand-green shadow-md">
       <div className="max-w-5xl mx-auto flex items-center justify-between px-6 py-4">
         <NavLink to="/" className="flex items-center gap-2 font-display text-2xl font-bold text-brand-cream tracking-wide">
           <CrownIcon className="w-7 h-7 text-brand-gold" />

@@ -1,7 +1,7 @@
 export default function ContactPage() {
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="font-display text-3xl font-bold text-brand-red mb-1">Contact & About</h1>
+      <h1 className="font-display text-3xl font-bold text-brand-green mb-1">Contact & About</h1>
       <p className="text-brand-ink/60 mb-8">金冠 — Peking, Szechuan, Cantonese &amp; English meals to take away</p>
 
       <div className="bg-white rounded-xl shadow-sm border border-black/5 p-6 space-y-6">

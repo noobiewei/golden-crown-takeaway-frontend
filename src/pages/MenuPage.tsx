@@ -36,7 +36,7 @@ export default function MenuPage() {
     <div className="space-y-14">
       {categoriesInOrder.map((category) => (
         <section key={category.id}>
-          <h2 className="font-display text-2xl font-bold text-brand-red mb-1">{category.name}</h2>
+          <h2 className="font-display text-2xl font-bold text-brand-green mb-1">{category.name}</h2>
           <div className="w-12 h-1 bg-brand-gold rounded-full mb-6" />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {menuItems
@@ -48,7 +48,7 @@ export default function MenuPage() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-semibold text-brand-ink">{item.name}</h3>
-                    <span className="font-semibold text-brand-red whitespace-nowrap">
+                    <span className="font-semibold text-brand-green whitespace-nowrap">
                       £{item.price.toFixed(2)}
                     </span>
                   </div>
@@ -78,7 +78,7 @@ export default function MenuPage() {
                   <button
                     type="button"
                     onClick={() => addToCart(item)}
-                    className="mt-4 self-start bg-brand-red text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-brand-red-dark transition-colors"
+                    className="mt-4 self-start bg-brand-green text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-brand-green-dark transition-colors"
                   >
                     Add to Cart
                   </button>

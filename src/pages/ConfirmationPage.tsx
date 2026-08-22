@@ -14,7 +14,7 @@ export default function ConfirmationPage() {
       <div className="w-16 h-16 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-3xl mx-auto mb-4">
         ✓
       </div>
-      <h1 className="font-display text-3xl font-bold text-brand-red mb-2">Order Confirmed!</h1>
+      <h1 className="font-display text-3xl font-bold text-brand-green mb-2">Order Confirmed!</h1>
       <p className="text-brand-ink/70 mb-1">
         Thanks, {order.customerName} — your order <span className="font-semibold">#{order.id}</span> has been received.
       </p>
@@ -41,7 +41,7 @@ export default function ConfirmationPage() {
         </div>
       </div>
 
-      <Link to="/" className="inline-block mt-6 text-brand-red font-medium hover:underline">
+      <Link to="/" className="inline-block mt-6 text-brand-green font-medium hover:underline">
         Back to menu
       </Link>
     </div>

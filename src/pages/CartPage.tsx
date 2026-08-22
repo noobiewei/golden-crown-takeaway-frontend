@@ -8,7 +8,7 @@ export default function CartPage() {
     return (
       <div className="text-center py-20">
         <p className="text-brand-ink/60 mb-4">Your cart is empty.</p>
-        <Link to="/" className="text-brand-red font-medium hover:underline">
+        <Link to="/" className="text-brand-green font-medium hover:underline">
           Browse the menu
         </Link>
       </div>
@@ -17,7 +17,7 @@ export default function CartPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="font-display text-3xl font-bold text-brand-red mb-6">Your Cart</h1>
+      <h1 className="font-display text-3xl font-bold text-brand-green mb-6">Your Cart</h1>
 
       <div className="bg-white rounded-xl shadow-sm border border-black/5 divide-y divide-black/5">
         {lines.map((line) => (
@@ -53,7 +53,7 @@ export default function CartPage() {
         </span>
         <Link
           to="/checkout"
-          className="bg-brand-red text-white font-medium px-6 py-2.5 rounded-full hover:bg-brand-red-dark transition-colors"
+          className="bg-brand-green text-white font-medium px-6 py-2.5 rounded-full hover:bg-brand-green-dark transition-colors"
         >
           Proceed to Checkout
         </Link>
