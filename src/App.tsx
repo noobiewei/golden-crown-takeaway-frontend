@@ -1,9 +1,11 @@
 import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
 import { CartProvider, useCart } from './context/CartContext';
+import CrownIcon from './components/CrownIcon';
 import MenuPage from './pages/MenuPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ConfirmationPage from './pages/ConfirmationPage';
+import ContactPage from './pages/ContactPage';
 import './App.css';
 
 function Header() {
@@ -19,8 +21,10 @@ function Header() {
   return (
     <header className="sticky top-0 z-10 bg-brand-red shadow-md">
       <div className="max-w-5xl mx-auto flex items-center justify-between px-6 py-4">
-        <NavLink to="/" className="font-display text-2xl font-bold text-brand-cream tracking-wide">
+        <NavLink to="/" className="flex items-center gap-2 font-display text-2xl font-bold text-brand-cream tracking-wide">
+          <CrownIcon className="w-7 h-7 text-brand-gold" />
           Golden Crown <span className="text-brand-gold">Takeaway</span>
+          <span className="text-brand-gold/80 text-xl font-normal ml-1">金冠</span>
         </NavLink>
         <nav className="flex items-center gap-2">
           <NavLink to="/" end className={navLinkClasses}>
@@ -32,6 +36,9 @@ function Header() {
                 {totalItems}
               </span>
             )}
+          </NavLink>
+          <NavLink to="/contact" className={navLinkClasses}>
+            Contact
           </NavLink>
         </nav>
       </div>
@@ -51,6 +58,7 @@ function App() {
               <Route path="/cart" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/confirmation" element={<ConfirmationPage />} />
+              <Route path="/contact" element={<ContactPage />} />
             </Routes>
           </main>
         </div>
