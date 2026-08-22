@@ -9,6 +9,9 @@ interface FormState {
   deliveryAddress: string;
 }
 
+const inputClasses =
+  'w-full rounded-md border border-black/10 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-gold';
+
 export default function CheckoutPage() {
   const { lines, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
@@ -22,7 +25,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
 
   if (lines.length === 0) {
-    return <p>Your cart is empty — add something from the menu first.</p>;
+    return <p className="text-center text-brand-ink/60 py-20">Your cart is empty — add something from the menu first.</p>;
   }
 
   function handleChange(field: keyof FormState, value: string) {
@@ -62,77 +65,94 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div>
-      <h1>Checkout</h1>
-      <ul>
-        {lines.map((line) => (
-          <li key={line.item.id}>
-            {line.item.name} x{line.quantity} — £{(line.item.price * line.quantity).toFixed(2)}
-          </li>
-        ))}
-      </ul>
-      <p>
-        <strong>Total: £{totalPrice.toFixed(2)}</strong>
-      </p>
+    <div className="max-w-xl mx-auto">
+      <h1 className="font-display text-3xl font-bold text-brand-red mb-6">Checkout</h1>
 
-      <form onSubmit={handleSubmit}>
-        <label>
-          Name
+      <div className="bg-white rounded-xl shadow-sm border border-black/5 p-5 mb-6">
+        <ul className="divide-y divide-black/5">
+          {lines.map((line) => (
+            <li key={line.item.id} className="flex justify-between py-2 text-sm">
+              <span>
+                {line.item.name} <span className="text-brand-ink/50">x{line.quantity}</span>
+              </span>
+              <span className="font-medium">£{(line.item.price * line.quantity).toFixed(2)}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="flex justify-between pt-3 mt-1 border-t border-black/5 font-display font-bold text-lg">
+          <span>Total</span>
+          <span>£{totalPrice.toFixed(2)}</span>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-black/5 p-5 space-y-4">
+        <label className="block">
+          <span className="block text-sm font-medium text-brand-ink/70 mb-1">Name</span>
           <input
             type="text"
             required
             value={form.customerName}
             onChange={(e) => handleChange('customerName', e.target.value)}
+            className={inputClasses}
           />
         </label>
 
-        <label>
-          Phone
+        <label className="block">
+          <span className="block text-sm font-medium text-brand-ink/70 mb-1">Phone</span>
           <input
             type="tel"
             required
             value={form.customerPhone}
             onChange={(e) => handleChange('customerPhone', e.target.value)}
+            className={inputClasses}
           />
         </label>
 
         <fieldset>
-          <legend>Order type</legend>
-          <label>
-            <input
-              type="radio"
-              name="orderType"
-              checked={form.orderType === 'PICKUP'}
-              onChange={() => handleChange('orderType', 'PICKUP')}
-            />
-            Pickup
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="orderType"
-              checked={form.orderType === 'DELIVERY'}
-              onChange={() => handleChange('orderType', 'DELIVERY')}
-            />
-            Delivery
-          </label>
+          <legend className="block text-sm font-medium text-brand-ink/70 mb-2">Order type</legend>
+          <div className="flex gap-3">
+            {(['PICKUP', 'DELIVERY'] as const).map((type) => (
+              <label
+                key={type}
+                className={`flex-1 text-center cursor-pointer rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                  form.orderType === type
+                    ? 'bg-brand-red text-white border-brand-red'
+                    : 'border-black/10 text-brand-ink/70 hover:bg-black/5'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="orderType"
+                  className="sr-only"
+                  checked={form.orderType === type}
+                  onChange={() => handleChange('orderType', type)}
+                />
+                {type === 'PICKUP' ? 'Pickup' : 'Delivery'}
+              </label>
+            ))}
+          </div>
         </fieldset>
 
         {form.orderType === 'DELIVERY' && (
-          <label>
-            Delivery address
+          <label className="block">
+            <span className="block text-sm font-medium text-brand-ink/70 mb-1">Delivery address</span>
             <input
               type="text"
               required
               value={form.deliveryAddress}
               onChange={(e) => handleChange('deliveryAddress', e.target.value)}
+              className={inputClasses}
             />
           </label>
         )}
 
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && <p className="text-sm text-red-600">{error}</p>}
 
-        <button type="submit" disabled={submitting}>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full bg-brand-red text-white font-medium py-2.5 rounded-full hover:bg-brand-red-dark transition-colors disabled:opacity-50"
+        >
           {submitting ? 'Placing order...' : 'Place Order'}
         </button>
       </form>
