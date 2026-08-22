@@ -26,6 +26,9 @@ export default function CartPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
+      <Link to="/" className="inline-block text-sm text-brand-ink/60 hover:text-brand-green mb-3">
+        ← Back to Menu
+      </Link>
       <h1 className="font-display text-3xl font-bold text-brand-green mb-6">Your Cart</h1>
 
       <div className="bg-white rounded-xl shadow-sm border border-black/5 divide-y divide-black/5">

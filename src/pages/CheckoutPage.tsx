@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { estimateDeliveryFee } from '../lib/deliveryFee';
 
@@ -81,6 +81,9 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-xl mx-auto">
+      <Link to="/cart" className="inline-block text-sm text-brand-ink/60 hover:text-brand-green mb-3">
+        ← Back to Cart
+      </Link>
       <h1 className="font-display text-3xl font-bold text-brand-green mb-6">Checkout</h1>
 
       <div className="bg-white rounded-xl shadow-sm border border-black/5 p-5 mb-6">
