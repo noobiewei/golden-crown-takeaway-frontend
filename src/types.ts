@@ -14,6 +14,7 @@ export interface MenuItem {
   vegetarian: boolean;
   spicy: boolean;
   containsNuts: boolean;
+  imageUrl: string | null;
 }
 
 export type OrderType = 'PICKUP' | 'DELIVERY';

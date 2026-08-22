@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { MenuItem } from '../types';
 import { useCart } from '../context/CartContext';
 import MenuItemCard from '../components/MenuItemCard';
+import PopularCarousel from '../components/PopularCarousel';
 
 export default function MenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -44,11 +45,7 @@ export default function MenuPage() {
         <section>
           <h2 className="font-display text-2xl font-bold text-brand-green mb-1">🔥 Popular Right Now</h2>
           <div className="w-12 h-1 bg-brand-gold rounded-full mb-6" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {popularItems.map((item) => (
-              <MenuItemCard key={item.id} item={item} onAdd={addToCart} />
-            ))}
-          </div>
+          <PopularCarousel items={popularItems} onAdd={addToCart} />
         </section>
       )}
 
