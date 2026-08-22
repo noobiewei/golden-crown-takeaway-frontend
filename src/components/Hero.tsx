@@ -1,3 +1,5 @@
+import OpenStatus from './OpenStatus';
+
 export default function Hero({ menuAnchorId }: { menuAnchorId?: string }) {
   return (
     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-green to-brand-green-dark text-brand-cream px-6 sm:px-10 py-10 sm:py-14 mb-10">
@@ -18,9 +20,7 @@ export default function Hero({ menuAnchorId }: { menuAnchorId?: string }) {
         >
           View Menu
         </a>
-        <span className="inline-flex items-center gap-1.5 text-sm bg-white/10 rounded-full px-3 py-1.5">
-          Hours coming soon
-        </span>
+        <OpenStatus />
       </div>
     </div>
   );
