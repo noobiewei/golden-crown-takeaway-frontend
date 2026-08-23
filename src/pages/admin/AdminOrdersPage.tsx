@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
+import { playNewOrderChime } from '../../lib/notificationSound';
 import type { Order, OrderStatus } from '../../types';
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
@@ -8,24 +9,59 @@ const STATUS_STYLES: Record<OrderStatus, string> = {
   CANCELLED: 'bg-red-100 text-red-700',
 };
 
+const BASE_TITLE = 'Golden Crown Admin — Orders';
+const POLL_INTERVAL_MS = 15_000;
+
 export default function AdminOrdersPage() {
   const { username, logout } = useAdminAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [newOrderIds, setNewOrderIds] = useState<Set<number>>(new Set());
+
+  // null until the very first successful fetch — lets us tell "first load"
+  // apart from "a real poll", so we don't treat every order as new on open.
+  const knownOrderIds = useRef<Set<number> | null>(null);
 
   useEffect(() => {
     loadOrders();
+    const interval = setInterval(loadOrders, POLL_INTERVAL_MS);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    function clearBadgeOnFocus() {
+      if (document.visibilityState === 'visible') {
+        document.title = BASE_TITLE;
+      }
+    }
+    document.addEventListener('visibilitychange', clearBadgeOnFocus);
+    return () => document.removeEventListener('visibilitychange', clearBadgeOnFocus);
   }, []);
 
   function loadOrders() {
-    setLoading(true);
     fetch('http://localhost:8080/api/admin/orders', { credentials: 'include' })
       .then((response) => {
         if (!response.ok) throw new Error(`Request failed: ${response.status}`);
         return response.json();
       })
       .then((data: Order[]) => {
+        const currentIds = new Set(data.map((o) => o.id));
+
+        if (knownOrderIds.current) {
+          const freshlyArrived = data.filter((o) => !knownOrderIds.current!.has(o.id));
+          if (freshlyArrived.length > 0) {
+            playNewOrderChime();
+            document.title = `🔔 (${freshlyArrived.length}) New Order${freshlyArrived.length > 1 ? 's' : ''} — ${BASE_TITLE}`;
+            setNewOrderIds((current) => {
+              const next = new Set(current);
+              freshlyArrived.forEach((o) => next.add(o.id));
+              return next;
+            });
+          }
+        }
+
+        knownOrderIds.current = currentIds;
         setOrders(data);
         setLoading(false);
       })
@@ -46,6 +82,11 @@ export default function AdminOrdersPage() {
     if (response.ok) {
       const updated: Order = await response.json();
       setOrders((current) => current.map((o) => (o.id === updated.id ? updated : o)));
+      setNewOrderIds((current) => {
+        const next = new Set(current);
+        next.delete(orderId);
+        return next;
+      });
     }
   }
 
@@ -57,6 +98,9 @@ export default function AdminOrdersPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display text-3xl font-bold text-brand-green">Orders</h1>
         <div className="flex items-center gap-4 text-sm">
+          <button onClick={loadOrders} className="text-brand-green font-medium hover:underline">
+            Refresh
+          </button>
           <span className="text-brand-ink/60">Logged in as {username}</span>
           <button onClick={logout} className="text-brand-green font-medium hover:underline">
             Log out
@@ -69,11 +113,21 @@ export default function AdminOrdersPage() {
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <div key={order.id} className="bg-white rounded-xl shadow-sm border border-black/5 p-5">
+            <div
+              key={order.id}
+              className={`bg-white rounded-xl shadow-sm border p-5 transition-colors ${
+                newOrderIds.has(order.id) ? 'border-brand-gold ring-2 ring-brand-gold/40' : 'border-black/5'
+              }`}
+            >
               <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
                 <div>
-                  <p className="font-semibold text-brand-ink">
+                  <p className="font-semibold text-brand-ink flex items-center gap-2">
                     Order #{order.id} — {order.customerName}
+                    {newOrderIds.has(order.id) && (
+                      <span className="text-xs font-bold text-brand-ink bg-brand-gold rounded-full px-2 py-0.5">
+                        NEW
+                      </span>
+                    )}
                   </p>
                   <p className="text-sm text-brand-ink/60">
                     {order.customerPhone} · {new Date(order.createdAt).toLocaleString()}
