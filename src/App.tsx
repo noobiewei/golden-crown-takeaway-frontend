@@ -1,11 +1,15 @@
-import { BrowserRouter, Routes, Route, NavLink, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, NavLink, Link, Outlet } from 'react-router-dom';
 import { CartProvider, useCart } from './context/CartContext';
+import { AdminAuthProvider } from './context/AdminAuthContext';
+import RequireAdmin from './components/RequireAdmin';
 import CrownIcon from './components/CrownIcon';
 import MenuPage from './pages/MenuPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ConfirmationPage from './pages/ConfirmationPage';
 import ContactPage from './pages/ContactPage';
+import AdminLoginPage from './pages/admin/AdminLoginPage';
+import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import './App.css';
 
 function Header() {
@@ -64,24 +68,54 @@ function Footer() {
   );
 }
 
+function SiteLayout() {
+  return (
+    <CartProvider>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 max-w-5xl w-full mx-auto px-6 py-10">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+    </CartProvider>
+  );
+}
+
+function AdminLayout() {
+  return (
+    <AdminAuthProvider>
+      <div className="min-h-screen bg-brand-cream px-6 py-10">
+        <Outlet />
+      </div>
+    </AdminAuthProvider>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <CartProvider>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-1 max-w-5xl w-full mx-auto px-6 py-10">
-            <Routes>
-              <Route path="/" element={<MenuPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route path="/checkout" element={<CheckoutPage />} />
-              <Route path="/confirmation" element={<ConfirmationPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </CartProvider>
+      <Routes>
+        <Route element={<SiteLayout />}>
+          <Route path="/" element={<MenuPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/confirmation" element={<ConfirmationPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+        </Route>
+
+        <Route element={<AdminLayout />}>
+          <Route path="/admin/login" element={<AdminLoginPage />} />
+          <Route
+            path="/admin/orders"
+            element={
+              <RequireAdmin>
+                <AdminOrdersPage />
+              </RequireAdmin>
+            }
+          />
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }
