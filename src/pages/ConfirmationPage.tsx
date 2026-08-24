@@ -1,12 +1,76 @@
-import { useLocation, Navigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useSearchParams, Navigate, Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import type { Order } from '../types';
 
-export default function ConfirmationPage() {
-  const location = useLocation();
-  const order = location.state?.order as Order | undefined;
+const MAX_POLL_ATTEMPTS = 5;
+const POLL_INTERVAL_MS = 1500;
 
-  if (!order) {
+export default function ConfirmationPage() {
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('session_id');
+  const { clearCart } = useCart();
+
+  const [order, setOrder] = useState<Order | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!sessionId) return;
+
+    let attempts = 0;
+    let cancelled = false;
+
+    function poll() {
+      fetch(`http://localhost:8080/api/orders/by-session/${sessionId}`)
+        .then((response) => {
+          if (!response.ok) throw new Error(`Request failed: ${response.status}`);
+          return response.json();
+        })
+        .then((data: Order) => {
+          if (cancelled) return;
+          attempts += 1;
+
+          // Stripe already sent us here via its success_url, so payment did
+          // succeed — but our webhook (the actual source of truth) might take
+          // a moment to arrive and flip paymentStatus to PAID. Poll briefly
+          // rather than showing a stale "unpaid" state.
+          if (data.paymentStatus === 'PAID' || attempts >= MAX_POLL_ATTEMPTS) {
+            setOrder(data);
+            setLoading(false);
+            clearCart();
+          } else {
+            setTimeout(poll, POLL_INTERVAL_MS);
+          }
+        })
+        .catch((err: Error) => {
+          if (cancelled) return;
+          setError(err.message);
+          setLoading(false);
+        });
+    }
+
+    poll();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]);
+
+  if (!sessionId) {
     return <Navigate to="/" replace />;
+  }
+
+  if (loading) {
+    return <p className="text-center text-brand-ink/60 py-20">Confirming your payment...</p>;
+  }
+
+  if (error || !order) {
+    return (
+      <p className="text-center text-red-600 py-20">
+        We couldn't find that order. If you were charged, please contact us with your payment reference.
+      </p>
+    );
   }
 
   return (
@@ -18,6 +82,9 @@ export default function ConfirmationPage() {
       <p className="text-brand-ink/70 mb-1">
         Thanks, {order.customerName} — your order <span className="font-semibold">#{order.id}</span> has been received.
       </p>
+      {order.paymentStatus !== 'PAID' && (
+        <p className="text-amber-700 text-sm mb-1">Finalizing your payment confirmation — this can take a moment.</p>
+      )}
       <p className="text-brand-ink/70 mb-6">
         {order.orderType === 'DELIVERY'
           ? `We'll deliver to: ${order.deliveryAddress}`

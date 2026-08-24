@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { estimateDeliveryFee } from '../lib/deliveryFee';
 
@@ -15,8 +15,7 @@ const inputClasses =
   'w-full rounded-md border border-black/10 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-gold';
 
 export default function CheckoutPage() {
-  const { lines, totalPrice, clearCart, specialInstructions } = useCart();
-  const navigate = useNavigate();
+  const { lines, totalPrice, specialInstructions } = useCart();
   const [form, setForm] = useState<FormState>({
     customerName: '',
     customerPhone: '',
@@ -69,12 +68,13 @@ export default function CheckoutPage() {
         throw new Error(body?.error ?? `Order failed: ${response.status}`);
       }
 
-      const order = await response.json();
-      clearCart();
-      navigate('/confirmation', { state: { order } });
+      const { checkoutUrl } = await response.json();
+      // Deliberately not clearing the cart here — if the customer cancels on
+      // Stripe's page, they land back on /checkout with everything intact.
+      // The cart only clears once ConfirmationPage confirms a paid order.
+      window.location.href = checkoutUrl;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
-    } finally {
       setSubmitting(false);
     }
   }

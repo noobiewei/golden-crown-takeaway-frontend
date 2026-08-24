@@ -19,6 +19,7 @@ export interface MenuItem {
 
 export type OrderType = 'PICKUP' | 'DELIVERY';
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED';
+export type PaymentStatus = 'UNPAID' | 'PAID';
 
 export interface OrderItemLine {
   id: number;
@@ -38,6 +39,7 @@ export interface Order {
   specialInstructions: string | null;
   deliveryFee: number;
   status: OrderStatus;
+  paymentStatus: PaymentStatus;
   createdAt: string;
   totalPrice: number;
   items: OrderItemLine[];
