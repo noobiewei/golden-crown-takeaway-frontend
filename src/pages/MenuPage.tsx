@@ -62,13 +62,24 @@ export default function MenuPage() {
         <Hero menuAnchorId={categoriesInOrder[0] ? `category-${categoriesInOrder[0].id}` : undefined} />
       )}
 
-      {!trimmedQuery && <MenuAssistant onAdd={addToCart} />}
+      {!trimmedQuery && (
+        <>
+          <MenuAssistant onAdd={addToCart} />
 
+          <div className="flex items-center gap-3 my-5">
+            <div className="h-px bg-black/10 flex-1" />
+            <span className="text-xs font-medium text-brand-ink/40 uppercase tracking-wide">Or</span>
+            <div className="h-px bg-black/10 flex-1" />
+          </div>
+        </>
+      )}
+
+      <p className="text-sm font-medium text-brand-ink/70 mb-2">🔍 Search by dish name</p>
       <input
         type="search"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Search the menu…"
+        placeholder="e.g. spring rolls"
         autoComplete="off"
         className="w-full rounded-full border border-black/10 bg-white px-5 py-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-gold"
       />
