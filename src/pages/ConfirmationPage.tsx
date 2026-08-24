@@ -9,6 +9,7 @@ const POLL_INTERVAL_MS = 1500;
 export default function ConfirmationPage() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
+  const orderToken = searchParams.get('order_token');
   const { clearCart } = useCart();
 
   const [order, setOrder] = useState<Order | null>(null);
@@ -16,13 +17,17 @@ export default function ConfirmationPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!sessionId) return;
+    if (!sessionId && !orderToken) return;
 
     let attempts = 0;
     let cancelled = false;
 
     function poll() {
-      fetch(`http://localhost:8080/api/orders/by-session/${sessionId}`)
+      const url = sessionId
+        ? `http://localhost:8080/api/orders/by-session/${sessionId}`
+        : `http://localhost:8080/api/orders/by-token/${orderToken}`;
+
+      fetch(url)
         .then((response) => {
           if (!response.ok) throw new Error(`Request failed: ${response.status}`);
           return response.json();
@@ -31,11 +36,12 @@ export default function ConfirmationPage() {
           if (cancelled) return;
           attempts += 1;
 
-          // Stripe already sent us here via its success_url, so payment did
-          // succeed — but our webhook (the actual source of truth) might take
-          // a moment to arrive and flip paymentStatus to PAID. Poll briefly
-          // rather than showing a stale "unpaid" state.
-          if (data.paymentStatus === 'PAID' || attempts >= MAX_POLL_ATTEMPTS) {
+          // Card orders: Stripe already sent us here via its success_url, so
+          // payment did succeed — but our webhook (the actual source of truth)
+          // might take a moment to arrive and flip paymentStatus to PAID. Poll
+          // briefly rather than showing a stale "unpaid" state. Cash orders have
+          // no async payment step to wait for, so one fetch is enough.
+          if (data.paymentMethod === 'CASH' || data.paymentStatus === 'PAID' || attempts >= MAX_POLL_ATTEMPTS) {
             setOrder(data);
             setLoading(false);
             clearCart();
@@ -55,14 +61,14 @@ export default function ConfirmationPage() {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sessionId]);
+  }, [sessionId, orderToken]);
 
-  if (!sessionId) {
+  if (!sessionId && !orderToken) {
     return <Navigate to="/" replace />;
   }
 
   if (loading) {
-    return <p className="text-center text-brand-ink/60 py-20">Confirming your payment...</p>;
+    return <p className="text-center text-brand-ink/60 py-20">Confirming your order...</p>;
   }
 
   if (error || !order) {
@@ -82,8 +88,14 @@ export default function ConfirmationPage() {
       <p className="text-brand-ink/70 mb-1">
         Thanks, {order.customerName} — your order <span className="font-semibold">#{order.id}</span> has been received.
       </p>
-      {order.paymentStatus !== 'PAID' && (
-        <p className="text-amber-700 text-sm mb-1">Finalizing your payment confirmation — this can take a moment.</p>
+      {order.paymentMethod === 'CASH' ? (
+        <p className="text-amber-700 text-sm mb-1">
+          Please have £{order.totalPrice.toFixed(2)} ready to pay by cash on {order.orderType === 'DELIVERY' ? 'delivery' : 'collection'}.
+        </p>
+      ) : (
+        order.paymentStatus !== 'PAID' && (
+          <p className="text-amber-700 text-sm mb-1">Finalizing your payment confirmation — this can take a moment.</p>
+        )
       )}
       <p className="text-brand-ink/70 mb-6">
         {order.orderType === 'DELIVERY'

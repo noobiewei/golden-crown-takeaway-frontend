@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { estimateDeliveryFee } from '../lib/deliveryFee';
+import type { PaymentMethod } from '../types';
 
 interface FormState {
   customerName: string;
@@ -9,6 +10,7 @@ interface FormState {
   orderType: 'PICKUP' | 'DELIVERY';
   deliveryAddress: string;
   deliveryPostcode: string;
+  paymentMethod: PaymentMethod;
 }
 
 const inputClasses =
@@ -16,12 +18,14 @@ const inputClasses =
 
 export default function CheckoutPage() {
   const { lines, totalPrice, specialInstructions } = useCart();
+  const navigate = useNavigate();
   const [form, setForm] = useState<FormState>({
     customerName: '',
     customerPhone: '',
     orderType: 'PICKUP',
     deliveryAddress: '',
     deliveryPostcode: '',
+    paymentMethod: 'CARD',
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +59,7 @@ export default function CheckoutPage() {
           deliveryAddress: form.orderType === 'DELIVERY' ? form.deliveryAddress : null,
           deliveryPostcode: form.orderType === 'DELIVERY' ? form.deliveryPostcode : null,
           specialInstructions: specialInstructions.trim() || null,
+          paymentMethod: form.paymentMethod,
           items: lines.map((line) => ({
             menuItemId: line.item.id,
             quantity: line.quantity,
@@ -68,11 +73,15 @@ export default function CheckoutPage() {
         throw new Error(body?.error ?? `Order failed: ${response.status}`);
       }
 
-      const { checkoutUrl } = await response.json();
+      const { checkoutUrl, order } = await response.json();
       // Deliberately not clearing the cart here — if the customer cancels on
       // Stripe's page, they land back on /checkout with everything intact.
-      // The cart only clears once ConfirmationPage confirms a paid order.
-      window.location.href = checkoutUrl;
+      // The cart only clears once ConfirmationPage confirms the order.
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      } else {
+        navigate(`/confirmation?order_token=${order.orderToken}`);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
       setSubmitting(false);
@@ -203,6 +212,31 @@ export default function CheckoutPage() {
             </label>
           </>
         )}
+
+        <fieldset>
+          <legend className="block text-sm font-medium text-brand-ink/70 mb-2">Payment method</legend>
+          <div className="flex gap-3">
+            {(['CARD', 'CASH'] as const).map((method) => (
+              <label
+                key={method}
+                className={`flex-1 text-center cursor-pointer rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                  form.paymentMethod === method
+                    ? 'bg-brand-green text-white border-brand-green'
+                    : 'border-black/10 text-brand-ink/70 hover:bg-black/5'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  className="sr-only"
+                  checked={form.paymentMethod === method}
+                  onChange={() => handleChange('paymentMethod', method)}
+                />
+                {method === 'CARD' ? 'Card' : `Cash on ${form.orderType === 'DELIVERY' ? 'delivery' : 'collection'}`}
+              </label>
+            ))}
+          </div>
+        </fieldset>
 
         {error && <p className="text-sm text-red-600">{error}</p>}
 

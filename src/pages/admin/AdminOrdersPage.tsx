@@ -128,10 +128,16 @@ export default function AdminOrdersPage() {
                         NEW
                       </span>
                     )}
-                    {order.paymentStatus !== 'PAID' && (
-                      <span className="text-xs font-bold text-white bg-red-600 rounded-full px-2 py-0.5">
-                        UNPAID
+                    {order.paymentMethod === 'CASH' ? (
+                      <span className="text-xs font-bold text-white bg-slate-500 rounded-full px-2 py-0.5">
+                        CASH
                       </span>
+                    ) : (
+                      order.paymentStatus !== 'PAID' && (
+                        <span className="text-xs font-bold text-white bg-red-600 rounded-full px-2 py-0.5">
+                          UNPAID
+                        </span>
+                      )
                     )}
                   </p>
                   <p className="text-sm text-brand-ink/60">
