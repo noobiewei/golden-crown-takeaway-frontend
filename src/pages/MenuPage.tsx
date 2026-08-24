@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import MenuItemCard from '../components/MenuItemCard';
 import PopularCarousel from '../components/PopularCarousel';
 import Hero from '../components/Hero';
+import MenuAssistant from '../components/MenuAssistant';
 
 export default function MenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -60,6 +61,8 @@ export default function MenuPage() {
       {!trimmedQuery && (
         <Hero menuAnchorId={categoriesInOrder[0] ? `category-${categoriesInOrder[0].id}` : undefined} />
       )}
+
+      {!trimmedQuery && <MenuAssistant onAdd={addToCart} />}
 
       <input
         type="search"
