@@ -8,6 +8,9 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ConfirmationPage from './pages/ConfirmationPage';
 import ContactPage from './pages/ContactPage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsPage from './pages/TermsPage';
+import AllergensPage from './pages/AllergensPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
 import './App.css';
@@ -58,9 +61,12 @@ function Footer() {
         <p className="font-display text-brand-cream text-lg">
           Golden Crown <span className="text-brand-gold">Takeaway</span> 金冠
         </p>
-        <nav className="flex items-center gap-6 text-sm">
+        <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-sm">
           <Link to="/" className="hover:text-brand-cream transition-colors">Menu</Link>
           <Link to="/contact" className="hover:text-brand-cream transition-colors">Contact &amp; About</Link>
+          <Link to="/allergens" className="hover:text-brand-cream transition-colors">Allergens</Link>
+          <Link to="/terms" className="hover:text-brand-cream transition-colors">Terms &amp; Conditions</Link>
+          <Link to="/privacy" className="hover:text-brand-cream transition-colors">Privacy Policy</Link>
         </nav>
         <p className="text-xs">&copy; {new Date().getFullYear()} Golden Crown Takeaway</p>
       </div>
@@ -102,6 +108,9 @@ function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/confirmation" element={<ConfirmationPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/allergens" element={<AllergensPage />} />
         </Route>
 
         <Route element={<AdminLayout />}>
