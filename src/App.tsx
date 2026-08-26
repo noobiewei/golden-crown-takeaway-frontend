@@ -3,6 +3,7 @@ import { CartProvider, useCart } from './context/CartContext';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import RequireAdmin from './components/RequireAdmin';
 import CrownIcon from './components/CrownIcon';
+import AnnouncementBar from './components/AnnouncementBar';
 import MenuPage from './pages/MenuPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
@@ -79,6 +80,7 @@ function SiteLayout() {
     <CartProvider>
       <div className="min-h-screen flex flex-col">
         <Header />
+        <AnnouncementBar />
         <main className="flex-1 max-w-5xl w-full mx-auto px-6 py-10">
           <Outlet />
         </main>
