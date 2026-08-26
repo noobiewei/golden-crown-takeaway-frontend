@@ -40,7 +40,7 @@ export default function AdminOrdersPage() {
   }, []);
 
   function loadOrders() {
-    fetch('http://localhost:8080/api/admin/orders', { credentials: 'include' })
+    fetch('/api/admin/orders', { credentials: 'include' })
       .then((response) => {
         if (!response.ok) throw new Error(`Request failed: ${response.status}`);
         return response.json();
@@ -72,7 +72,7 @@ export default function AdminOrdersPage() {
   }
 
   async function updateStatus(orderId: number, status: OrderStatus) {
-    const response = await fetch(`http://localhost:8080/api/admin/orders/${orderId}/status`, {
+    const response = await fetch(`/api/admin/orders/${orderId}/status`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

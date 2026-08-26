@@ -24,8 +24,8 @@ export default function ConfirmationPage() {
 
     function poll() {
       const url = sessionId
-        ? `http://localhost:8080/api/orders/by-session/${sessionId}`
-        : `http://localhost:8080/api/orders/by-token/${orderToken}`;
+        ? `/api/orders/by-session/${sessionId}`
+        : `/api/orders/by-token/${orderToken}`;
 
       fetch(url)
         .then((response) => {

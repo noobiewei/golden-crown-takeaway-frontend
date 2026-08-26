@@ -17,7 +17,7 @@ export default function MenuAssistant({ onAdd }: { onAdd: (item: MenuItem) => vo
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/api/assistant/recommend', {
+      const response = await fetch('/api/assistant/recommend', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: message.trim() }),

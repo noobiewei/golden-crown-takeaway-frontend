@@ -16,11 +16,11 @@ export default function MenuPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch('http://localhost:8080/api/menu').then((r) => {
+      fetch('/api/menu').then((r) => {
         if (!r.ok) throw new Error(`Request failed: ${r.status}`);
         return r.json();
       }),
-      fetch('http://localhost:8080/api/menu/popular').then((r) => {
+      fetch('/api/menu/popular').then((r) => {
         if (!r.ok) throw new Error(`Request failed: ${r.status}`);
         return r.json();
       }),

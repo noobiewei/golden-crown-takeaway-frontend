@@ -14,14 +14,14 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/auth/me', { credentials: 'include' })
+    fetch('/api/auth/me', { credentials: 'include' })
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => setUsername(data?.username ?? null))
       .finally(() => setLoading(false));
   }, []);
 
   async function login(usernameInput: string, password: string): Promise<boolean> {
-    const response = await fetch('http://localhost:8080/api/auth/login', {
+    const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       credentials: 'include',
@@ -36,7 +36,7 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function logout() {
-    await fetch('http://localhost:8080/api/auth/logout', {
+    await fetch('/api/auth/logout', {
       method: 'POST',
       credentials: 'include',
     });
