@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import type { MenuItem } from '../types';
 import { useCart } from '../context/CartContext';
 import MenuItemCard from '../components/MenuItemCard';
@@ -12,6 +12,8 @@ export default function MenuPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
+  const didInitExpansion = useRef(false);
   const { addToCart } = useCart();
 
   useEffect(() => {
@@ -43,6 +45,35 @@ export default function MenuPage() {
       ),
     [menuItems]
   );
+
+  // Open the first category by default so the page isn't empty on load,
+  // but only once — otherwise this would re-fire and re-open it every time
+  // the user collapses everything back down.
+  useEffect(() => {
+    if (!didInitExpansion.current && categoriesInOrder.length > 0) {
+      setExpandedCategories(new Set([categoriesInOrder[0].id]));
+      didInitExpansion.current = true;
+    }
+  }, [categoriesInOrder]);
+
+  function toggleCategory(id: number) {
+    setExpandedCategories((current) => {
+      const next = new Set(current);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function scrollToCategory(id: number) {
+    setExpandedCategories((current) => new Set(current).add(id));
+    setTimeout(() => {
+      document.getElementById(`category-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  }
 
   const trimmedQuery = searchQuery.trim().toLowerCase();
   const searchResults = trimmedQuery
@@ -87,18 +118,19 @@ export default function MenuPage() {
       {!trimmedQuery && (
         <nav className="flex gap-2 overflow-x-auto mt-4 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {categoriesInOrder.map((category) => (
-            <a
+            <button
               key={category.id}
-              href={`#category-${category.id}`}
+              type="button"
+              onClick={() => scrollToCategory(category.id)}
               className="shrink-0 px-4 py-1.5 rounded-full text-sm font-medium bg-white border border-black/10 text-brand-ink/70 hover:bg-brand-green hover:text-white hover:border-brand-green transition-colors"
             >
               {category.name}
-            </a>
+            </button>
           ))}
         </nav>
       )}
 
-      <div className="space-y-14 mt-10">
+      <div className="space-y-4 mt-10">
         {trimmedQuery ? (
           <section>
             <h2 className="font-display text-2xl font-bold text-brand-green mb-1">
@@ -118,26 +150,52 @@ export default function MenuPage() {
         ) : (
           <>
             {popularItems.length > 0 && (
-              <section>
+              <section className="mb-10">
                 <h2 className="font-display text-2xl font-bold text-brand-green mb-1">🔥 Popular Right Now</h2>
                 <div className="w-12 h-1 bg-brand-gold rounded-full mb-6" />
                 <PopularCarousel items={popularItems} onAdd={addToCart} />
               </section>
             )}
 
-            {categoriesInOrder.map((category) => (
-              <section key={category.id} id={`category-${category.id}`} className="scroll-mt-24">
-                <h2 className="font-display text-2xl font-bold text-brand-green mb-1">{category.name}</h2>
-                <div className="w-12 h-1 bg-brand-gold rounded-full mb-6" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                  {menuItems
-                    .filter((item) => item.category.id === category.id)
-                    .map((item) => (
-                      <MenuItemCard key={item.id} item={item} onAdd={addToCart} />
-                    ))}
-                </div>
-              </section>
-            ))}
+            {categoriesInOrder.map((category) => {
+              const items = menuItems.filter((item) => item.category.id === category.id);
+              const isExpanded = expandedCategories.has(category.id);
+
+              return (
+                <section key={category.id} id={`category-${category.id}`} className="scroll-mt-24 border-b border-black/5 pb-4">
+                  <button
+                    type="button"
+                    onClick={() => toggleCategory(category.id)}
+                    aria-expanded={isExpanded}
+                    className="w-full flex items-center justify-between gap-3 py-2 text-left"
+                  >
+                    <span className="font-display text-2xl font-bold text-brand-green">
+                      {category.name}
+                      <span className="ml-2 text-sm font-sans font-normal text-brand-ink/40">
+                        {items.length} {items.length === 1 ? 'dish' : 'dishes'}
+                      </span>
+                    </span>
+                    <span
+                      className={`shrink-0 text-brand-green text-xl transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      aria-hidden="true"
+                    >
+                      ▾
+                    </span>
+                  </button>
+
+                  {isExpanded && (
+                    <>
+                      <div className="w-12 h-1 bg-brand-gold rounded-full mb-6 mt-1" />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        {items.map((item) => (
+                          <MenuItemCard key={item.id} item={item} onAdd={addToCart} />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </section>
+              );
+            })}
           </>
         )}
       </div>
