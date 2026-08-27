@@ -21,6 +21,13 @@ export type OrderType = 'PICKUP' | 'DELIVERY';
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED';
 export type PaymentStatus = 'UNPAID' | 'PAID';
 export type PaymentMethod = 'CARD' | 'CASH';
+export type FreeDrinkChoice = 'COKE' | 'DIET_COKE' | 'TANGO_ORANGE';
+
+export const FREE_DRINK_LABELS: Record<FreeDrinkChoice, string> = {
+  COKE: 'Coke',
+  DIET_COKE: 'Diet Coke',
+  TANGO_ORANGE: 'Tango Orange',
+};
 
 export interface OrderItemLine {
   id: number;
@@ -43,6 +50,7 @@ export interface Order {
   paymentStatus: PaymentStatus;
   paymentMethod: PaymentMethod;
   orderToken: string | null;
+  freeDrinkChoice: FreeDrinkChoice | null;
   createdAt: string;
   totalPrice: number;
   items: OrderItemLine[];

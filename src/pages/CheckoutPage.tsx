@@ -2,7 +2,9 @@ import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { estimateDeliveryFee } from '../lib/deliveryFee';
-import type { PaymentMethod } from '../types';
+import { FREE_DRINK_LABELS, type FreeDrinkChoice, type PaymentMethod } from '../types';
+
+const FREE_DRINK_THRESHOLD = 55;
 
 interface FormState {
   customerName: string;
@@ -11,6 +13,7 @@ interface FormState {
   deliveryAddress: string;
   deliveryPostcode: string;
   paymentMethod: PaymentMethod;
+  freeDrinkChoice: FreeDrinkChoice | null;
 }
 
 const inputClasses =
@@ -26,6 +29,7 @@ export default function CheckoutPage() {
     deliveryAddress: '',
     deliveryPostcode: '',
     paymentMethod: 'CARD',
+    freeDrinkChoice: null,
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +46,7 @@ export default function CheckoutPage() {
   const grandTotal = totalPrice + deliveryFee;
   const MINIMUM_DELIVERY_ORDER = 15;
   const belowDeliveryMinimum = form.orderType === 'DELIVERY' && totalPrice < MINIMUM_DELIVERY_ORDER;
+  const qualifiesForFreeDrink = totalPrice >= FREE_DRINK_THRESHOLD;
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -60,6 +65,7 @@ export default function CheckoutPage() {
           deliveryPostcode: form.orderType === 'DELIVERY' ? form.deliveryPostcode : null,
           specialInstructions: specialInstructions.trim() || null,
           paymentMethod: form.paymentMethod,
+          freeDrinkChoice: qualifiesForFreeDrink ? form.freeDrinkChoice : null,
           items: lines.map((line) => ({
             menuItemId: line.item.id,
             quantity: line.quantity,
@@ -211,6 +217,35 @@ export default function CheckoutPage() {
               />
             </label>
           </>
+        )}
+
+        {qualifiesForFreeDrink && (
+          <fieldset>
+            <legend className="block text-sm font-medium text-brand-ink/70 mb-2">
+              🎁 Your free drink (orders over £{FREE_DRINK_THRESHOLD})
+            </legend>
+            <div className="flex gap-3">
+              {(['COKE', 'DIET_COKE', 'TANGO_ORANGE'] as const).map((drink) => (
+                <label
+                  key={drink}
+                  className={`flex-1 text-center cursor-pointer rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
+                    form.freeDrinkChoice === drink
+                      ? 'bg-brand-green text-white border-brand-green'
+                      : 'border-black/10 text-brand-ink/70 hover:bg-black/5'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="freeDrinkChoice"
+                    className="sr-only"
+                    checked={form.freeDrinkChoice === drink}
+                    onChange={() => handleChange('freeDrinkChoice', drink)}
+                  />
+                  {FREE_DRINK_LABELS[drink]}
+                </label>
+              ))}
+            </div>
+          </fieldset>
         )}
 
         <fieldset>

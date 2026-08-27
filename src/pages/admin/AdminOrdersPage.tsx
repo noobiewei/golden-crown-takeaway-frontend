@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { playNewOrderChime } from '../../lib/notificationSound';
-import type { Order, OrderStatus } from '../../types';
+import { FREE_DRINK_LABELS, type Order, type OrderStatus } from '../../types';
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
   PENDING: 'bg-amber-100 text-amber-700',
@@ -173,6 +173,12 @@ export default function AdminOrdersPage() {
                   </li>
                 ))}
               </ul>
+
+              {order.freeDrinkChoice && (
+                <p className="text-brand-green text-xs font-medium mt-2 pt-2 border-t border-black/5">
+                  🎁 Free drink: {FREE_DRINK_LABELS[order.freeDrinkChoice]}
+                </p>
+              )}
 
               {order.specialInstructions && (
                 <p className="text-brand-ink/60 text-xs mt-2 pt-2 border-t border-black/5">

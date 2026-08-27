@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Navigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import type { Order } from '../types';
+import { FREE_DRINK_LABELS, type Order } from '../types';
 
 const MAX_POLL_ATTEMPTS = 5;
 const POLL_INTERVAL_MS = 1500;
@@ -117,6 +117,11 @@ export default function ConfirmationPage() {
             </li>
           ))}
         </ul>
+        {order.freeDrinkChoice && (
+          <p className="text-brand-green text-xs font-medium pt-2 mt-1 border-t border-black/5">
+            🎁 Free drink: {FREE_DRINK_LABELS[order.freeDrinkChoice]}
+          </p>
+        )}
         {order.specialInstructions && (
           <p className="text-brand-ink/60 text-xs pt-2 mt-1 border-t border-black/5">
             Special instructions: {order.specialInstructions}
