@@ -29,12 +29,26 @@ export const FREE_DRINK_LABELS: Record<FreeDrinkChoice, string> = {
   TANGO_ORANGE: 'Tango Orange',
 };
 
+export interface DishExtra {
+  name: string;
+  price: number;
+}
+
+export type ExtrasCatalog = Record<string, DishExtra[]>;
+
+export interface OrderItemExtraLine {
+  id: number;
+  name: string;
+  priceAtOrder: number;
+}
+
 export interface OrderItemLine {
   id: number;
   menuItem: MenuItem;
   quantity: number;
   priceAtOrder: number;
   note: string | null;
+  extras: OrderItemExtraLine[];
 }
 
 export interface Order {

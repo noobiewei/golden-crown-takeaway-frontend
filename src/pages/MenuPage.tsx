@@ -1,20 +1,23 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import type { MenuItem } from '../types';
+import type { ExtrasCatalog, MenuItem } from '../types';
 import { useCart } from '../context/CartContext';
 import MenuItemCard from '../components/MenuItemCard';
 import PopularCarousel from '../components/PopularCarousel';
 import Hero from '../components/Hero';
 import MenuAssistant from '../components/MenuAssistant';
+import CustomiseModal from '../components/CustomiseModal';
 
 export default function MenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [popularItems, setPopularItems] = useState<MenuItem[]>([]);
+  const [extrasCatalog, setExtrasCatalog] = useState<ExtrasCatalog>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<Set<number>>(new Set());
+  const [customiseItem, setCustomiseItem] = useState<MenuItem | null>(null);
   const didInitExpansion = useRef(false);
-  const { addToCart } = useCart();
+  const { addToCart, addCustomizedToCart } = useCart();
 
   useEffect(() => {
     Promise.all([
@@ -26,10 +29,12 @@ export default function MenuPage() {
         if (!r.ok) throw new Error(`Request failed: ${r.status}`);
         return r.json();
       }),
+      fetch('/api/menu/extras-catalog').then((r) => (r.ok ? r.json() : {})),
     ])
-      .then(([menuData, popularData]: [MenuItem[], MenuItem[]]) => {
+      .then(([menuData, popularData, extrasCatalogData]: [MenuItem[], MenuItem[], ExtrasCatalog]) => {
         setMenuItems(menuData);
         setPopularItems(popularData);
+        setExtrasCatalog(extrasCatalogData);
         setLoading(false);
       })
       .catch((err: Error) => {
@@ -95,7 +100,7 @@ export default function MenuPage() {
 
       {!trimmedQuery && (
         <>
-          <MenuAssistant onAdd={addToCart} />
+          <MenuAssistant onAdd={addToCart} extrasCatalog={extrasCatalog} onCustomise={setCustomiseItem} />
 
           <div className="flex items-center gap-3 my-5">
             <div className="h-px bg-black/10 flex-1" />
@@ -142,7 +147,13 @@ export default function MenuPage() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 {searchResults.map((item) => (
-                  <MenuItemCard key={item.id} item={item} onAdd={addToCart} />
+                  <MenuItemCard
+                    key={item.id}
+                    item={item}
+                    onAdd={addToCart}
+                    extras={extrasCatalog[item.name] ?? []}
+                    onCustomise={setCustomiseItem}
+                  />
                 ))}
               </div>
             )}
@@ -153,7 +164,12 @@ export default function MenuPage() {
               <section className="mb-10">
                 <h2 className="font-display text-2xl font-bold text-brand-green mb-1">🔥 Popular Right Now</h2>
                 <div className="w-12 h-1 bg-brand-gold rounded-full mb-6" />
-                <PopularCarousel items={popularItems} onAdd={addToCart} />
+                <PopularCarousel
+                  items={popularItems}
+                  onAdd={addToCart}
+                  extrasCatalog={extrasCatalog}
+                  onCustomise={setCustomiseItem}
+                />
               </section>
             )}
 
@@ -188,7 +204,13 @@ export default function MenuPage() {
                       <div className="w-12 h-1 bg-brand-gold rounded-full mb-6 mt-1" />
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         {items.map((item) => (
-                          <MenuItemCard key={item.id} item={item} onAdd={addToCart} />
+                          <MenuItemCard
+                            key={item.id}
+                            item={item}
+                            onAdd={addToCart}
+                            extras={extrasCatalog[item.name] ?? []}
+                            onCustomise={setCustomiseItem}
+                          />
                         ))}
                       </div>
                     </>
@@ -199,6 +221,18 @@ export default function MenuPage() {
           </>
         )}
       </div>
+
+      {customiseItem && (
+        <CustomiseModal
+          item={customiseItem}
+          extras={extrasCatalog[customiseItem.name] ?? []}
+          onClose={() => setCustomiseItem(null)}
+          onConfirm={(quantity, note, selectedExtras) => {
+            addCustomizedToCart(customiseItem, quantity, note, selectedExtras);
+            setCustomiseItem(null);
+          }}
+        />
+      )}
     </div>
   );
 }

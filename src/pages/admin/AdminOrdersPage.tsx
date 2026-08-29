@@ -161,17 +161,27 @@ export default function AdminOrdersPage() {
               </div>
 
               <ul className="divide-y divide-black/5 border-t border-black/5 pt-2">
-                {order.items.map((line) => (
-                  <li key={line.id} className="py-1.5 text-sm">
-                    <div className="flex justify-between">
-                      <span>
-                        {line.menuItem.name} <span className="text-brand-ink/50">x{line.quantity}</span>
-                      </span>
-                      <span className="font-medium">£{(line.priceAtOrder * line.quantity).toFixed(2)}</span>
-                    </div>
-                    {line.note && <p className="text-brand-ink/50 text-xs">Note: {line.note}</p>}
-                  </li>
-                ))}
+                {order.items.map((line) => {
+                  const extrasPrice = line.extras.reduce((sum, e) => sum + e.priceAtOrder, 0);
+                  const lineTotal = (line.priceAtOrder + extrasPrice) * line.quantity;
+
+                  return (
+                    <li key={line.id} className="py-1.5 text-sm">
+                      <div className="flex justify-between">
+                        <span>
+                          {line.menuItem.name} <span className="text-brand-ink/50">x{line.quantity}</span>
+                        </span>
+                        <span className="font-medium">£{lineTotal.toFixed(2)}</span>
+                      </div>
+                      {line.extras.length > 0 && (
+                        <p className="text-brand-ink/50 text-xs">
+                          + {line.extras.map((e) => e.name).join(', ')}
+                        </p>
+                      )}
+                      {line.note && <p className="text-brand-ink/50 text-xs">Note: {line.note}</p>}
+                    </li>
+                  );
+                })}
               </ul>
 
               {order.freeDrinkChoice && (

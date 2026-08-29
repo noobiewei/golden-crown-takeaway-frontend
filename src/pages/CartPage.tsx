@@ -3,15 +3,8 @@ import { useCart } from '../context/CartContext';
 import QuantityStepper from '../components/QuantityStepper';
 
 export default function CartPage() {
-  const {
-    lines,
-    removeFromCart,
-    updateQuantity,
-    updateNote,
-    specialInstructions,
-    setSpecialInstructions,
-    totalPrice,
-  } = useCart();
+  const { lines, removeFromCart, updateQuantity, updateNote, specialInstructions, setSpecialInstructions, totalPrice } =
+    useCart();
 
   if (lines.length === 0) {
     return (
@@ -32,38 +25,48 @@ export default function CartPage() {
       <h1 className="font-display text-3xl font-bold text-brand-green mb-6">Your Cart</h1>
 
       <div className="bg-white rounded-xl shadow-sm border border-black/5 divide-y divide-black/5">
-        {lines.map((line) => (
-          <div key={line.item.id} className="p-4">
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <p className="font-medium text-brand-ink">{line.item.name}</p>
-                <p className="text-sm text-brand-ink/60">£{line.item.price.toFixed(2)} each</p>
+        {lines.map((line) => {
+          const extrasPrice = line.extras.reduce((sum, e) => sum + e.price, 0);
+          const lineTotal = (line.item.price + extrasPrice) * line.quantity;
+
+          return (
+            <div key={line.lineId} className="p-4">
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <p className="font-medium text-brand-ink">{line.item.name}</p>
+                  <p className="text-sm text-brand-ink/60">£{line.item.price.toFixed(2)} each</p>
+                  {line.extras.length > 0 && (
+                    <p className="text-xs text-brand-ink/50 mt-0.5">
+                      + {line.extras.map((extra) => `${extra.name} (+£${extra.price.toFixed(2)})`).join(', ')}
+                    </p>
+                  )}
+                </div>
+                <QuantityStepper
+                  quantity={line.quantity}
+                  onChange={(quantity) => updateQuantity(line.lineId, quantity)}
+                />
+                <span className="w-16 text-right font-medium text-brand-ink">
+                  £{lineTotal.toFixed(2)}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeFromCart(line.lineId)}
+                  aria-label={`Remove ${line.item.name}`}
+                  className="text-brand-ink/30 hover:text-red-600 transition-colors text-lg leading-none"
+                >
+                  ✕
+                </button>
               </div>
-              <QuantityStepper
-                quantity={line.quantity}
-                onChange={(quantity) => updateQuantity(line.item.id, quantity)}
+              <input
+                type="text"
+                value={line.note}
+                onChange={(e) => updateNote(line.lineId, e.target.value)}
+                placeholder="Customise this item — e.g. no spring onion, no spicy…"
+                className="mt-2 w-full text-sm rounded-md border border-black/10 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-gold placeholder:text-brand-ink/40"
               />
-              <span className="w-16 text-right font-medium text-brand-ink">
-                £{(line.item.price * line.quantity).toFixed(2)}
-              </span>
-              <button
-                type="button"
-                onClick={() => removeFromCart(line.item.id)}
-                aria-label={`Remove ${line.item.name}`}
-                className="text-brand-ink/30 hover:text-red-600 transition-colors text-lg leading-none"
-              >
-                ✕
-              </button>
             </div>
-            <input
-              type="text"
-              value={line.note}
-              onChange={(e) => updateNote(line.item.id, e.target.value)}
-              placeholder="Customise this item — e.g. no spring onion, extra spicy…"
-              className="mt-2 w-full text-sm rounded-md border border-black/10 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-gold placeholder:text-brand-ink/40"
-            />
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-6">

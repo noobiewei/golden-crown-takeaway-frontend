@@ -70,6 +70,7 @@ export default function CheckoutPage() {
             menuItemId: line.item.id,
             quantity: line.quantity,
             note: line.note.trim() || null,
+            extraNames: line.extras.map((extra) => extra.name),
           })),
         }),
       });
@@ -103,17 +104,27 @@ export default function CheckoutPage() {
 
       <div className="bg-white rounded-xl shadow-sm border border-black/5 p-5 mb-6">
         <ul className="divide-y divide-black/5">
-          {lines.map((line) => (
-            <li key={line.item.id} className="py-2 text-sm">
-              <div className="flex justify-between">
-                <span>
-                  {line.item.name} <span className="text-brand-ink/50">x{line.quantity}</span>
-                </span>
-                <span className="font-medium">£{(line.item.price * line.quantity).toFixed(2)}</span>
-              </div>
-              {line.note.trim() && <p className="text-brand-ink/50 text-xs mt-0.5">Note: {line.note.trim()}</p>}
-            </li>
-          ))}
+          {lines.map((line) => {
+            const extrasPrice = line.extras.reduce((sum, extra) => sum + extra.price, 0);
+            const lineTotal = (line.item.price + extrasPrice) * line.quantity;
+
+            return (
+              <li key={line.lineId} className="py-2 text-sm">
+                <div className="flex justify-between">
+                  <span>
+                    {line.item.name} <span className="text-brand-ink/50">x{line.quantity}</span>
+                  </span>
+                  <span className="font-medium">£{lineTotal.toFixed(2)}</span>
+                </div>
+                {line.extras.length > 0 && (
+                  <p className="text-brand-ink/50 text-xs mt-0.5">
+                    + {line.extras.map((extra) => extra.name).join(', ')}
+                  </p>
+                )}
+                {line.note.trim() && <p className="text-brand-ink/50 text-xs mt-0.5">Note: {line.note.trim()}</p>}
+              </li>
+            );
+          })}
         </ul>
         {specialInstructions.trim() && (
           <p className="text-brand-ink/60 text-xs pt-2 mt-1 border-t border-black/5">

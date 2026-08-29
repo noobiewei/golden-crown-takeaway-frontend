@@ -1,8 +1,16 @@
 import { useState, type FormEvent } from 'react';
-import type { MenuItem } from '../types';
+import type { ExtrasCatalog, MenuItem } from '../types';
 import MenuItemCard from './MenuItemCard';
 
-export default function MenuAssistant({ onAdd }: { onAdd: (item: MenuItem) => void }) {
+export default function MenuAssistant({
+  onAdd,
+  extrasCatalog = {},
+  onCustomise,
+}: {
+  onAdd: (item: MenuItem) => void;
+  extrasCatalog?: ExtrasCatalog;
+  onCustomise?: (item: MenuItem) => void;
+}) {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -66,7 +74,13 @@ export default function MenuAssistant({ onAdd }: { onAdd: (item: MenuItem) => vo
           {recommendedItems.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {recommendedItems.map((item) => (
-                <MenuItemCard key={item.id} item={item} onAdd={onAdd} />
+                <MenuItemCard
+                  key={item.id}
+                  item={item}
+                  onAdd={onAdd}
+                  extras={extrasCatalog[item.name] ?? []}
+                  onCustomise={onCustomise}
+                />
               ))}
             </div>
           )}

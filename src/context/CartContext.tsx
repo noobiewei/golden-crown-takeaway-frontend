@@ -1,18 +1,21 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import type { MenuItem } from '../types';
+import type { DishExtra, MenuItem } from '../types';
 
 export interface CartLine {
+  lineId: string;
   item: MenuItem;
   quantity: number;
   note: string;
+  extras: DishExtra[];
 }
 
 interface CartContextValue {
   lines: CartLine[];
   addToCart: (item: MenuItem) => void;
-  removeFromCart: (itemId: number) => void;
-  updateQuantity: (itemId: number, quantity: number) => void;
-  updateNote: (itemId: number, note: string) => void;
+  addCustomizedToCart: (item: MenuItem, quantity: number, note: string, extras: DishExtra[]) => void;
+  removeFromCart: (lineId: string) => void;
+  updateQuantity: (lineId: string, quantity: number) => void;
+  updateNote: (lineId: string, note: string) => void;
   specialInstructions: string;
   setSpecialInstructions: (value: string) => void;
   clearCart: () => void;
@@ -28,19 +31,35 @@ interface StoredCart {
   specialInstructions: string;
 }
 
+function makeLineId() {
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 function loadCartFromStorage(): StoredCart {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { lines: [], specialInstructions: '' };
     const parsed = JSON.parse(raw);
-    // Older versions stored just an array of lines with no notes/instructions.
+    // Older versions stored just an array of lines with no notes/extras/lineId.
     if (Array.isArray(parsed)) {
       return {
-        lines: parsed.map((line: CartLine) => ({ ...line, note: line.note ?? '' })),
+        lines: parsed.map((line: CartLine) => ({
+          ...line,
+          lineId: line.lineId ?? makeLineId(),
+          note: line.note ?? '',
+          extras: line.extras ?? [],
+        })),
         specialInstructions: '',
       };
     }
-    return { lines: parsed.lines ?? [], specialInstructions: parsed.specialInstructions ?? '' };
+    return {
+      lines: (parsed.lines ?? []).map((line: CartLine) => ({
+        ...line,
+        lineId: line.lineId ?? makeLineId(),
+        extras: line.extras ?? [],
+      })),
+      specialInstructions: parsed.specialInstructions ?? '',
+    };
   } catch {
     return { lines: [], specialInstructions: '' };
   }
@@ -57,33 +76,39 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   function addToCart(item: MenuItem) {
     setLines((current) => {
-      const existing = current.find((line) => line.item.id === item.id);
+      const existing = current.find(
+        (line) => line.item.id === item.id && line.note === '' && line.extras.length === 0
+      );
       if (existing) {
         return current.map((line) =>
-          line.item.id === item.id ? { ...line, quantity: line.quantity + 1 } : line
+          line.lineId === existing.lineId ? { ...line, quantity: line.quantity + 1 } : line
         );
       }
-      return [...current, { item, quantity: 1, note: '' }];
+      return [...current, { lineId: makeLineId(), item, quantity: 1, note: '', extras: [] }];
     });
   }
 
-  function removeFromCart(itemId: number) {
-    setLines((current) => current.filter((line) => line.item.id !== itemId));
+  function addCustomizedToCart(item: MenuItem, quantity: number, note: string, extras: DishExtra[]) {
+    setLines((current) => [...current, { lineId: makeLineId(), item, quantity, note, extras }]);
   }
 
-  function updateQuantity(itemId: number, quantity: number) {
+  function removeFromCart(lineId: string) {
+    setLines((current) => current.filter((line) => line.lineId !== lineId));
+  }
+
+  function updateQuantity(lineId: string, quantity: number) {
     if (quantity <= 0) {
-      removeFromCart(itemId);
+      removeFromCart(lineId);
       return;
     }
     setLines((current) =>
-      current.map((line) => (line.item.id === itemId ? { ...line, quantity } : line))
+      current.map((line) => (line.lineId === lineId ? { ...line, quantity } : line))
     );
   }
 
-  function updateNote(itemId: number, note: string) {
+  function updateNote(lineId: string, note: string) {
     setLines((current) =>
-      current.map((line) => (line.item.id === itemId ? { ...line, note } : line))
+      current.map((line) => (line.lineId === lineId ? { ...line, note } : line))
     );
   }
 
@@ -92,7 +117,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setSpecialInstructions('');
   }
 
-  const totalPrice = lines.reduce((sum, line) => sum + line.item.price * line.quantity, 0);
+  const totalPrice = lines.reduce((sum, line) => {
+    const extrasPrice = line.extras.reduce((extrasSum, extra) => extrasSum + extra.price, 0);
+    return sum + (line.item.price + extrasPrice) * line.quantity;
+  }, 0);
   const totalItems = lines.reduce((sum, line) => sum + line.quantity, 0);
 
   return (
@@ -100,6 +128,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         lines,
         addToCart,
+        addCustomizedToCart,
         removeFromCart,
         updateQuantity,
         updateNote,

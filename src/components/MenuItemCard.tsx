@@ -1,11 +1,15 @@
-import type { MenuItem } from '../types';
+import type { DishExtra, MenuItem } from '../types';
 
 export default function MenuItemCard({
   item,
   onAdd,
+  extras = [],
+  onCustomise,
 }: {
   item: MenuItem;
   onAdd: (item: MenuItem) => void;
+  extras?: DishExtra[];
+  onCustomise?: (item: MenuItem) => void;
 }) {
   return (
     <div className="flex flex-col bg-white rounded-xl shadow-sm border border-black/5 p-5 hover:shadow-md transition-shadow">
@@ -38,13 +42,24 @@ export default function MenuItemCard({
 
       <p className="text-sm text-brand-ink/60 mt-2 flex-1">{item.description}</p>
 
-      <button
-        type="button"
-        onClick={() => onAdd(item)}
-        className="mt-4 self-start bg-brand-green text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-brand-green-dark transition-colors"
-      >
-        Add to Cart
-      </button>
+      <div className="mt-4 flex gap-2">
+        <button
+          type="button"
+          onClick={() => onAdd(item)}
+          className="self-start bg-brand-green text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-brand-green-dark transition-colors"
+        >
+          Add to Cart
+        </button>
+        {extras.length > 0 && onCustomise && (
+          <button
+            type="button"
+            onClick={() => onCustomise(item)}
+            className="self-start border border-brand-green text-brand-green text-sm font-medium px-4 py-2 rounded-full hover:bg-brand-green/5 transition-colors"
+          >
+            Customise
+          </button>
+        )}
+      </div>
     </div>
   );
 }

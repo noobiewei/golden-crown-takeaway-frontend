@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import type { MenuItem } from '../types';
+import type { ExtrasCatalog, MenuItem } from '../types';
 
 function ImagePlaceholder() {
   return (
@@ -13,9 +13,13 @@ function ImagePlaceholder() {
 export default function PopularCarousel({
   items,
   onAdd,
+  extrasCatalog = {},
+  onCustomise,
 }: {
   items: MenuItem[];
   onAdd: (item: MenuItem) => void;
+  extrasCatalog?: ExtrasCatalog;
+  onCustomise?: (item: MenuItem) => void;
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
 
@@ -29,37 +33,51 @@ export default function PopularCarousel({
         ref={scrollerRef}
         className="flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="snap-start shrink-0 w-64 flex flex-col bg-white rounded-xl shadow-sm border border-black/5 p-4"
-          >
-            {item.imageUrl ? (
-              <img
-                src={item.imageUrl}
-                alt={item.name}
-                className="w-full h-36 rounded-lg object-cover"
-              />
-            ) : (
-              <ImagePlaceholder />
-            )}
-
-            <div className="flex items-start justify-between gap-2 mt-3">
-              <h3 className="font-semibold text-brand-ink text-sm">{item.name}</h3>
-              <span className="font-semibold text-brand-green text-sm whitespace-nowrap">
-                £{item.price.toFixed(2)}
-              </span>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => onAdd(item)}
-              className="mt-3 bg-brand-green text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-brand-green-dark transition-colors"
+        {items.map((item) => {
+          const extras = extrasCatalog[item.name] ?? [];
+          return (
+            <div
+              key={item.id}
+              className="snap-start shrink-0 w-64 flex flex-col bg-white rounded-xl shadow-sm border border-black/5 p-4"
             >
-              Add to Cart
-            </button>
-          </div>
-        ))}
+              {item.imageUrl ? (
+                <img
+                  src={item.imageUrl}
+                  alt={item.name}
+                  className="w-full h-36 rounded-lg object-cover"
+                />
+              ) : (
+                <ImagePlaceholder />
+              )}
+
+              <div className="flex items-start justify-between gap-2 mt-3">
+                <h3 className="font-semibold text-brand-ink text-sm">{item.name}</h3>
+                <span className="font-semibold text-brand-green text-sm whitespace-nowrap">
+                  £{item.price.toFixed(2)}
+                </span>
+              </div>
+
+              <div className="mt-3 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => onAdd(item)}
+                  className="bg-brand-green text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-brand-green-dark transition-colors"
+                >
+                  Add to Cart
+                </button>
+                {extras.length > 0 && onCustomise && (
+                  <button
+                    type="button"
+                    onClick={() => onCustomise(item)}
+                    className="border border-brand-green text-brand-green text-sm font-medium px-4 py-2 rounded-full hover:bg-brand-green/5 transition-colors"
+                  >
+                    Customise
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       <button
