@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import type { ExtrasCatalog, MenuItem } from '../types';
+import CrownIcon from './CrownIcon';
 
 export default function PopularCarousel({
   items,
@@ -29,19 +30,24 @@ export default function PopularCarousel({
           return (
             <div
               key={item.id}
-              className={`snap-start shrink-0 w-64 flex flex-col bg-white rounded-xl shadow-sm border border-black/5 p-4 ${
-                item.imageUrl ? '' : 'justify-center'
-              }`}
+              className="snap-start shrink-0 w-64 flex flex-col bg-white rounded-xl shadow-sm border border-black/5 p-4"
             >
-              {item.imageUrl && (
+              {item.imageUrl ? (
                 <img
                   src={item.imageUrl}
                   alt={item.name}
                   className="w-full h-36 rounded-lg object-cover"
                 />
+              ) : (
+                <div className="w-full h-36 rounded-lg bg-brand-green flex flex-col items-center justify-center gap-1.5">
+                  <CrownIcon className="w-8 h-8 text-brand-gold" />
+                  <span className="font-display text-brand-cream text-sm font-bold tracking-wide">
+                    Golden Crown
+                  </span>
+                </div>
               )}
 
-              <div className={`flex items-start justify-between gap-2 ${item.imageUrl ? 'mt-3' : ''}`}>
+              <div className="flex items-start justify-between gap-2 mt-3">
                 <h3 className="font-semibold text-brand-ink text-sm">{item.name}</h3>
                 <span className="font-semibold text-brand-green text-sm whitespace-nowrap">
                   £{item.price.toFixed(2)}
