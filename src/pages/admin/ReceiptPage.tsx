@@ -61,7 +61,7 @@ export default function ReceiptPage() {
       <div className="receipt bg-white text-black">
         {/* Customer copy — English + Chinese */}
         <div className="receipt-copy">
-          <p className="text-center font-bold text-base">GOLDEN CROWN 金冠外卖</p>
+          <p className="text-center font-bold text-xl">GOLDEN CROWN 金冠外卖</p>
           <p className="text-center">Chinese Takeaway</p>
           <p className="text-center">199 St. Albans Road, North Watford, WD24 5BH</p>
           <p className="text-center">Tel: (01923) 237483 / (01923) 803478</p>
@@ -95,7 +95,7 @@ export default function ReceiptPage() {
                 </div>
               ))}
               {line.note && (
-                <p className="pl-3">
+                <p className="pl-3 font-bold">
                   Note: {line.note}
                   {line.noteZh ? ` / ${line.noteZh}` : ''}
                 </p>
@@ -130,7 +130,7 @@ export default function ReceiptPage() {
             <p>Free drink 赠饮: {FREE_DRINK_LABELS_ZH[order.freeDrinkChoice]}</p>
           )}
           {order.specialInstructions && (
-            <p>
+            <p className="font-bold">
               Special instructions: {order.specialInstructions}
               {order.specialInstructionsZh ? ` / ${order.specialInstructionsZh}` : ''}
             </p>
@@ -143,7 +143,7 @@ export default function ReceiptPage() {
 
         {/* Kitchen copy — Chinese only */}
         <div className="receipt-copy">
-          <p className="text-center font-bold text-base">金冠外卖 厨房单</p>
+          <p className="text-center font-bold text-xl">金冠外卖 厨房单</p>
           <hr />
           <p>单号 #{order.id} &middot; {createdAt}</p>
           <hr />
@@ -164,7 +164,7 @@ export default function ReceiptPage() {
               {line.extras.map((extra) => (
                 <p key={extra.id} className="pl-3">+ {extra.nameZh}</p>
               ))}
-              {(line.noteZh || line.note) && <p className="pl-3">备注: {line.noteZh ?? line.note}</p>}
+              {(line.noteZh || line.note) && <p className="pl-3 font-bold">备注: {line.noteZh ?? line.note}</p>}
             </div>
           ))}
           {order.freeDrinkChoice && (
@@ -176,7 +176,7 @@ export default function ReceiptPage() {
           {(order.specialInstructionsZh || order.specialInstructions) && (
             <>
               <hr />
-              <p>备注: {order.specialInstructionsZh ?? order.specialInstructions}</p>
+              <p className="font-bold">备注: {order.specialInstructionsZh ?? order.specialInstructions}</p>
             </>
           )}
         </div>
@@ -185,8 +185,8 @@ export default function ReceiptPage() {
       <style>{`
         .receipt {
           font-family: 'Courier New', monospace;
-          font-size: 12px;
-          line-height: 1.5;
+          font-size: 15px;
+          line-height: 1.6;
         }
         .receipt hr {
           border: none;
