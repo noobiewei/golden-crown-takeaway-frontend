@@ -1,6 +1,5 @@
 import { useRef } from 'react';
 import type { ExtrasCatalog, MenuItem } from '../types';
-import DishImage from './DishImage';
 
 export default function PopularCarousel({
   items,
@@ -32,7 +31,13 @@ export default function PopularCarousel({
               key={item.id}
               className="snap-start shrink-0 w-64 flex flex-col bg-white rounded-xl shadow-sm border border-black/5 p-4"
             >
-              <DishImage item={item} className="w-full h-36" />
+              {item.imageUrl && (
+                <img
+                  src={item.imageUrl}
+                  alt={item.name}
+                  className="w-full h-36 rounded-lg object-cover"
+                />
+              )}
 
               <div className="flex items-start justify-between gap-2 mt-3">
                 <h3 className="font-semibold text-brand-ink text-sm">{item.name}</h3>
