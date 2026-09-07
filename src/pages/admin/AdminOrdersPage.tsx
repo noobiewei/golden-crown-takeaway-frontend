@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { playNewOrderChime } from '../../lib/notificationSound';
 import { FREE_DRINK_LABELS, type Order, type OrderStatus } from '../../types';
@@ -149,15 +150,24 @@ export default function AdminOrdersPage() {
                       : 'Pickup'}
                   </p>
                 </div>
-                <select
-                  value={order.status}
-                  onChange={(e) => updateStatus(order.id, e.target.value as OrderStatus)}
-                  className={`text-xs font-medium rounded-full px-3 py-1.5 border-0 ${STATUS_STYLES[order.status]}`}
-                >
-                  <option value="PENDING">PENDING</option>
-                  <option value="CONFIRMED">CONFIRMED</option>
-                  <option value="CANCELLED">CANCELLED</option>
-                </select>
+                <div className="flex items-center gap-2">
+                  <Link
+                    to={`/admin/orders/${order.id}/print`}
+                    target="_blank"
+                    className="text-xs font-medium text-brand-green hover:underline whitespace-nowrap"
+                  >
+                    Print Receipt
+                  </Link>
+                  <select
+                    value={order.status}
+                    onChange={(e) => updateStatus(order.id, e.target.value as OrderStatus)}
+                    className={`text-xs font-medium rounded-full px-3 py-1.5 border-0 ${STATUS_STYLES[order.status]}`}
+                  >
+                    <option value="PENDING">PENDING</option>
+                    <option value="CONFIRMED">CONFIRMED</option>
+                    <option value="CANCELLED">CANCELLED</option>
+                  </select>
+                </div>
               </div>
 
               <ul className="divide-y divide-black/5 border-t border-black/5 pt-2">

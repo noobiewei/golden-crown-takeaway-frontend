@@ -7,6 +7,7 @@ export interface Category {
 export interface MenuItem {
   id: number;
   name: string;
+  nameZh: string | null;
   description: string;
   price: number;
   category: Category;
@@ -31,6 +32,7 @@ export const FREE_DRINK_LABELS: Record<FreeDrinkChoice, string> = {
 
 export interface DishExtra {
   name: string;
+  nameZh: string | null;
   price: number;
 }
 
@@ -39,6 +41,7 @@ export type ExtrasCatalog = Record<string, DishExtra[]>;
 export interface OrderItemExtraLine {
   id: number;
   name: string;
+  nameZh: string | null;
   priceAtOrder: number;
 }
 
@@ -48,6 +51,7 @@ export interface OrderItemLine {
   quantity: number;
   priceAtOrder: number;
   note: string | null;
+  noteZh: string | null;
   extras: OrderItemExtraLine[];
 }
 
@@ -59,6 +63,7 @@ export interface Order {
   deliveryAddress: string | null;
   deliveryPostcode: string | null;
   specialInstructions: string | null;
+  specialInstructionsZh: string | null;
   deliveryFee: number;
   status: OrderStatus;
   paymentStatus: PaymentStatus;

@@ -14,6 +14,7 @@ import TermsPage from './pages/TermsPage';
 import AllergensPage from './pages/AllergensPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminOrdersPage from './pages/admin/AdminOrdersPage';
+import ReceiptPage from './pages/admin/ReceiptPage';
 import './App.css';
 
 function Header() {
@@ -122,6 +123,14 @@ function App() {
             element={
               <RequireAdmin>
                 <AdminOrdersPage />
+              </RequireAdmin>
+            }
+          />
+          <Route
+            path="/admin/orders/:id/print"
+            element={
+              <RequireAdmin>
+                <ReceiptPage />
               </RequireAdmin>
             }
           />
