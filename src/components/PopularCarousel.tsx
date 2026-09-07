@@ -29,7 +29,9 @@ export default function PopularCarousel({
           return (
             <div
               key={item.id}
-              className="snap-start shrink-0 w-64 flex flex-col bg-white rounded-xl shadow-sm border border-black/5 p-4"
+              className={`snap-start shrink-0 w-64 flex flex-col bg-white rounded-xl shadow-sm border border-black/5 p-4 ${
+                item.imageUrl ? '' : 'justify-center'
+              }`}
             >
               {item.imageUrl && (
                 <img
@@ -39,7 +41,7 @@ export default function PopularCarousel({
                 />
               )}
 
-              <div className="flex items-start justify-between gap-2 mt-3">
+              <div className={`flex items-start justify-between gap-2 ${item.imageUrl ? 'mt-3' : ''}`}>
                 <h3 className="font-semibold text-brand-ink text-sm">{item.name}</h3>
                 <span className="font-semibold text-brand-green text-sm whitespace-nowrap">
                   £{item.price.toFixed(2)}
