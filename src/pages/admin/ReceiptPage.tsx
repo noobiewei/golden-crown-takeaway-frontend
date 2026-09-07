@@ -137,6 +137,9 @@ export default function ReceiptPage() {
           )}
           <hr />
           <p className="text-center">Thank you! 多谢惠顾</p>
+          <p className="text-center font-bold text-2xl mt-2">
+            {order.paymentStatus === 'PAID' ? 'PAID' : 'UNPAID'}
+          </p>
         </div>
 
         <div className="page-break" />
@@ -160,7 +163,7 @@ export default function ReceiptPage() {
           <hr />
           {order.items.map((line) => (
             <div key={line.id} className="mb-1">
-              <p>{line.quantity}x {line.menuItem.nameZh}</p>
+              <p className="text-lg">{line.quantity}x {line.menuItem.nameZh}</p>
               {line.extras.map((extra) => (
                 <p key={extra.id} className="pl-3">+ {extra.nameZh}</p>
               ))}
