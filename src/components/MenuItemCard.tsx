@@ -1,4 +1,5 @@
 import type { DishExtra, MenuItem } from '../types';
+import DishImage from './DishImage';
 
 export default function MenuItemCard({
   item,
@@ -13,6 +14,8 @@ export default function MenuItemCard({
 }) {
   return (
     <div className="flex flex-col bg-white rounded-xl shadow-sm border border-black/5 p-5 hover:shadow-md transition-shadow">
+      <DishImage item={item} className="w-full h-40 mb-3" />
+
       <div className="flex items-start justify-between gap-3">
         <h3 className="font-semibold text-brand-ink">{item.name}</h3>
         <span className="font-semibold text-brand-green whitespace-nowrap">
