@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import type { FreeDrinkChoice, Order, OrderType, PaymentMethod } from '../../types';
 
 const FREE_DRINK_LABELS_ZH: Record<FreeDrinkChoice, string> = {
@@ -20,6 +20,9 @@ const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
 
 export default function ReceiptPage() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const autoprint = searchParams.get('autoprint') === '1';
+  const hasAutoprinted = useRef(false);
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +42,16 @@ export default function ReceiptPage() {
         setLoading(false);
       });
   }, [id]);
+
+  // Lets the print agent (or any automated caller) load this page with
+  // ?autoprint=1 and have it print itself with no button click needed. Only
+  // fires once the order has actually finished loading and translating.
+  useEffect(() => {
+    if (autoprint && order && !hasAutoprinted.current) {
+      hasAutoprinted.current = true;
+      window.print();
+    }
+  }, [autoprint, order]);
 
   if (loading) return <p className="text-center text-brand-ink/60 py-20">Loading receipt...</p>;
   if (error || !order) {
