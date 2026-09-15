@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Navigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import { getEstimatedWaitTime } from '../lib/estimatedWaitTime';
 import { FREE_DRINK_LABELS, type Order } from '../types';
 
 const MAX_POLL_ATTEMPTS = 5;
@@ -97,10 +98,14 @@ export default function ConfirmationPage() {
           <p className="text-amber-700 text-sm mb-1">Finalizing your payment confirmation — this can take a moment.</p>
         )
       )}
-      <p className="text-brand-ink/70 mb-6">
+      <p className="text-brand-ink/70 mb-1">
         {order.orderType === 'DELIVERY'
           ? `We'll deliver to: ${order.deliveryAddress}`
           : "We'll have it ready for pickup."}
+      </p>
+      <p className="text-brand-ink/70 mb-6">
+        Estimated {order.orderType === 'DELIVERY' ? 'delivery' : 'ready'} time:{' '}
+        <span className="font-medium">{getEstimatedWaitTime(order.orderType, order.createdAt)}</span>
       </p>
 
       <div className="bg-white rounded-xl shadow-sm border border-black/5 p-5 text-left">
