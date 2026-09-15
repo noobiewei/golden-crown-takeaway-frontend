@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useAdminAuth } from '../../context/AdminAuthContext';
 import { playNewOrderChime } from '../../lib/notificationSound';
+import { enablePushNotifications } from '../../lib/pushNotifications';
 import { FREE_DRINK_LABELS, type Order, type OrderStatus } from '../../types';
 
 const STATUS_STYLES: Record<OrderStatus, string> = {
@@ -19,6 +20,8 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [newOrderIds, setNewOrderIds] = useState<Set<number>>(new Set());
+  const [pushStatus, setPushStatus] = useState<'unknown' | 'off' | 'enabling' | 'on' | 'error'>('unknown');
+  const [pushError, setPushError] = useState<string | null>(null);
 
   // null until the very first successful fetch — lets us tell "first load"
   // apart from "a real poll", so we don't treat every order as new on open.
@@ -29,6 +32,30 @@ export default function AdminOrdersPage() {
     const interval = setInterval(loadOrders, POLL_INTERVAL_MS);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+      setPushStatus('error');
+      setPushError('Not supported in this browser.');
+      return;
+    }
+    navigator.serviceWorker.ready
+      .then((registration) => registration.pushManager.getSubscription())
+      .then((subscription) => setPushStatus(subscription ? 'on' : 'off'))
+      .catch(() => setPushStatus('off'));
+  }, []);
+
+  async function handleEnablePush() {
+    setPushStatus('enabling');
+    setPushError(null);
+    try {
+      await enablePushNotifications();
+      setPushStatus('on');
+    } catch (err) {
+      setPushStatus('error');
+      setPushError(err instanceof Error ? err.message : 'Something went wrong');
+    }
+  }
 
   useEffect(() => {
     function clearBadgeOnFocus() {
@@ -99,6 +126,21 @@ export default function AdminOrdersPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display text-3xl font-bold text-brand-green">Orders</h1>
         <div className="flex items-center gap-4 text-sm">
+          {pushStatus === 'on' && <span className="text-brand-green/70">🔔 Notifications on</span>}
+          {(pushStatus === 'off' || pushStatus === 'enabling') && (
+            <button
+              onClick={handleEnablePush}
+              disabled={pushStatus === 'enabling'}
+              className="text-brand-green font-medium hover:underline disabled:opacity-50"
+            >
+              {pushStatus === 'enabling' ? 'Enabling…' : 'Enable Notifications'}
+            </button>
+          )}
+          {pushStatus === 'error' && (
+            <span className="text-red-600" title={pushError ?? undefined}>
+              Notifications unavailable
+            </span>
+          )}
           <button onClick={loadOrders} className="text-brand-green font-medium hover:underline">
             Refresh
           </button>

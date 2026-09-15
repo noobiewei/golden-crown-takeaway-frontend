@@ -1,0 +1,12 @@
+{
+  "name": "Golden Crown Takeaway",
+  "short_name": "Golden Crown",
+  "start_url": "/admin/orders",
+  "display": "standalone",
+  "background_color": "#fdf8f0",
+  "theme_color": "#6f7a1e",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
