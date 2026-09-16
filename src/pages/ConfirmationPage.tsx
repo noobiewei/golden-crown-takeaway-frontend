@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams, Navigate, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { getEstimatedWaitTime } from '../lib/estimatedWaitTime';
+import { GOOGLE_REVIEW_URL } from '../lib/reviewLink';
 import { FREE_DRINK_LABELS, type Order } from '../types';
 
 const MAX_POLL_ATTEMPTS = 5;
@@ -158,6 +159,18 @@ export default function ConfirmationPage() {
           <span>Total</span>
           <span>£{order.totalPrice.toFixed(2)}</span>
         </div>
+      </div>
+
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mt-6">
+        <p className="text-brand-ink/80 text-sm mb-2">Enjoyed your order? A quick review helps us a lot.</p>
+        <a
+          href={GOOGLE_REVIEW_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-brand-green text-white font-medium text-sm px-5 py-2 rounded-full hover:bg-brand-green-dark transition-colors"
+        >
+          ⭐ Leave us a review on Google
+        </a>
       </div>
 
       <Link to="/" className="inline-block mt-6 text-brand-green font-medium hover:underline">
