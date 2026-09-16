@@ -1,9 +1,16 @@
+import { useSeo } from '../lib/useSeo';
+
 const ALLERGENS = [
   'Celery', 'Cereals containing gluten', 'Crustaceans', 'Eggs', 'Fish', 'Lupin', 'Milk',
   'Molluscs', 'Mustard', 'Tree nuts', 'Peanuts', 'Sesame', 'Soybeans', 'Sulphur dioxide & sulphites',
 ];
 
 export default function AllergensPage() {
+  useSeo(
+    'Allergen Information | Golden Crown Takeaway',
+    'Allergen information for Golden Crown Takeaway, North Watford. Read before ordering if you have a food allergy or intolerance.'
+  );
+
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="font-display text-3xl font-bold text-brand-green mb-1">Allergen Information</h1>

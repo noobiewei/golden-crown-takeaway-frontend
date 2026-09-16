@@ -1,4 +1,11 @@
+import { useSeo } from '../lib/useSeo';
+
 export default function ContactPage() {
+  useSeo(
+    'Contact & Opening Hours | Golden Crown Takeaway, North Watford',
+    'Address, phone number and opening hours for Golden Crown Takeaway at 199 St Albans Road, North Watford, WD24 5BH.'
+  );
+
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="font-display text-3xl font-bold text-brand-green mb-1">Contact & About</h1>

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /confirmation
+
+Sitemap: https://goldencrownwatford.co.uk/sitemap.xml

@@ -1,4 +1,11 @@
+import { useSeo } from '../lib/useSeo';
+
 export default function TermsPage() {
+  useSeo(
+    'Terms & Conditions | Golden Crown Takeaway',
+    'Terms and conditions for ordering food from Golden Crown Takeaway, North Watford.'
+  );
+
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="font-display text-3xl font-bold text-brand-green mb-1">Terms &amp; Conditions</h1>

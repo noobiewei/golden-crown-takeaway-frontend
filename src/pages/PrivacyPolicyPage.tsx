@@ -1,4 +1,11 @@
+import { useSeo } from '../lib/useSeo';
+
 export default function PrivacyPolicyPage() {
+  useSeo(
+    'Privacy Policy | Golden Crown Takeaway',
+    'Privacy policy for Golden Crown Takeaway, North Watford, covering how we handle your order and personal data.'
+  );
+
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="font-display text-3xl font-bold text-brand-green mb-1">Privacy Policy</h1>
