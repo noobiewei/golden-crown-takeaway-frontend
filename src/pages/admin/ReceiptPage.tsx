@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import QRCode from 'qrcode';
-import { GOOGLE_REVIEW_URL } from '../../lib/reviewLink';
 import type { FreeDrinkChoice, Order, OrderType, PaymentMethod } from '../../types';
 
 const FREE_DRINK_LABELS_ZH: Record<FreeDrinkChoice, string> = {
@@ -28,13 +26,6 @@ export default function ReceiptPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [reviewQrDataUrl, setReviewQrDataUrl] = useState<string | null | undefined>(undefined);
-
-  useEffect(() => {
-    QRCode.toDataURL(GOOGLE_REVIEW_URL, { width: 200, margin: 1 })
-      .then(setReviewQrDataUrl)
-      .catch(() => setReviewQrDataUrl(null));
-  }, []);
 
   useEffect(() => {
     fetch(`/api/admin/orders/${id}/receipt`, { credentials: 'include' })
@@ -53,14 +44,14 @@ export default function ReceiptPage() {
   }, [id]);
 
   // Lets the print agent (or any automated caller) load this page with
-  // ?autoprint=1 and have it print itself with no button click needed. Waits
-  // for the review QR code too, so it isn't printed blank on a race.
+  // ?autoprint=1 and have it print itself with no button click needed. Only
+  // fires once the order has actually finished loading and translating.
   useEffect(() => {
-    if (autoprint && order && reviewQrDataUrl !== undefined && !hasAutoprinted.current) {
+    if (autoprint && order && !hasAutoprinted.current) {
       hasAutoprinted.current = true;
       window.print();
     }
-  }, [autoprint, order, reviewQrDataUrl]);
+  }, [autoprint, order]);
 
   if (loading) return <p className="text-center text-brand-ink/60 py-20">Loading receipt...</p>;
   if (error || !order) {
@@ -156,13 +147,6 @@ export default function ReceiptPage() {
               Special instructions: {order.specialInstructions}
               {order.specialInstructionsZh ? ` / ${order.specialInstructionsZh}` : ''}
             </p>
-          )}
-          <hr />
-          {reviewQrDataUrl && (
-            <div className="text-center">
-              <p>Enjoyed your meal? Leave us a review!</p>
-              <img src={reviewQrDataUrl} alt="Scan to leave a Google review" className="mx-auto my-1" width={120} height={120} />
-            </div>
           )}
           <hr />
           <p className="text-center">Thank you! 多谢惠顾</p>
