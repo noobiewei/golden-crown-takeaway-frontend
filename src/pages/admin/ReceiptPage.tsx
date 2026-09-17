@@ -95,16 +95,14 @@ export default function ReceiptPage() {
           <hr />
           {order.items.map((line) => (
             <div key={line.id} className="mb-1">
-              <div className="flex justify-between gap-2">
-                <span>
-                  {line.quantity}x {line.menuItem.name} {line.menuItem.nameZh}
-                </span>
-                <span>£{(line.priceAtOrder * line.quantity).toFixed(2)}</span>
+              <div>
+                {line.quantity}x {line.menuItem.name} {line.menuItem.nameZh}
               </div>
+              <div className="text-right">£{(line.priceAtOrder * line.quantity).toFixed(2)}</div>
               {line.extras.map((extra) => (
-                <div key={extra.id} className="flex justify-between gap-2 pl-3">
-                  <span>+ {extra.name} {extra.nameZh}</span>
-                  <span>£{extra.priceAtOrder.toFixed(2)}</span>
+                <div key={extra.id} className="pl-3">
+                  <div>+ {extra.name} {extra.nameZh}</div>
+                  <div className="text-right">£{extra.priceAtOrder.toFixed(2)}</div>
                 </div>
               ))}
               {line.note && (
@@ -228,7 +226,13 @@ export default function ReceiptPage() {
             top: 0;
             left: 0;
             width: 80mm;
-            padding: 3mm;
+            /* Extra side padding keeps content off the physical edges — the
+               paper is 79.5mm ± 0.5mm, not a clean 80mm, and the print head's
+               usable area is narrower still than the paper width. */
+            padding: 4mm;
+            font-size: 20px;
+            font-weight: 700;
+            color: #000;
           }
           .no-print {
             display: none;
