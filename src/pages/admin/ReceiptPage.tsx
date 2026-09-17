@@ -84,10 +84,11 @@ export default function ReceiptPage() {
         {/* Customer copy — English + Chinese */}
         {showCustomer && (
         <div className="receipt-copy">
-          <p className="text-center font-bold text-xl">GOLDEN CROWN 金冠外卖</p>
+          <p className="text-center font-bold text-sm">GOLDEN CROWN</p>
+          <p className="text-center font-bold text-xl">金冠外卖</p>
           <p className="text-center">Chinese Takeaway</p>
           <p className="text-center">199 St. Albans Road, North Watford, WD24 5BH</p>
-          <p className="text-center">Tel: (01923) 237483 / (01923) 803478</p>
+          <p className="text-center">Tel: (01923) 237483</p>
           <hr />
           <p>Order #{order.id} &middot; {createdAt}</p>
           <p>CUSTOMER COPY 客户收据</p>
@@ -106,14 +107,14 @@ export default function ReceiptPage() {
           {order.items.map((line) => (
             <div key={line.id} className="mb-1">
               <div className="flex justify-between gap-2">
-                <span>{line.quantity}x {line.menuItem.name}</span>
+                <span className="text-sm">{line.quantity}x {line.menuItem.name}</span>
                 <span>£{(line.priceAtOrder * line.quantity).toFixed(2)}</span>
               </div>
               <div>{line.menuItem.nameZh}</div>
               {line.extras.map((extra) => (
                 <div key={extra.id} className="pl-3">
                   <div className="flex justify-between gap-2">
-                    <span>+ {extra.name}</span>
+                    <span className="text-sm">+ {extra.name}</span>
                     <span>£{extra.priceAtOrder.toFixed(2)}</span>
                   </div>
                   <div>{extra.nameZh}</div>
@@ -143,7 +144,7 @@ export default function ReceiptPage() {
             <span>£{order.totalPrice.toFixed(2)}</span>
           </div>
           <hr />
-          <p>
+          <p className="whitespace-nowrap">
             Payment: {PAYMENT_METHOD_LABEL[order.paymentMethod]}
             {order.paymentMethod === 'CASH'
               ? ` on ${order.orderType === 'DELIVERY' ? 'delivery' : 'collection'}`
@@ -172,7 +173,7 @@ export default function ReceiptPage() {
 
         {/* Kitchen copy — Chinese only */}
         {showKitchen && (
-        <div className="receipt-copy kitchen-copy">
+        <div className="receipt-copy">
           <p className="text-center font-bold text-xl">金冠外卖 厨房单</p>
           <hr />
           <p>单号 #{order.id} &middot; {createdAt}</p>
@@ -190,9 +191,9 @@ export default function ReceiptPage() {
           <hr />
           {order.items.map((line) => (
             <div key={line.id} className="mb-1">
-              <p className="text-lg">{line.quantity}x {line.menuItem.nameZh}</p>
+              <p className="text-sm">{line.quantity}x {line.menuItem.nameZh}</p>
               {line.extras.map((extra) => (
-                <p key={extra.id} className="pl-3">+ {extra.nameZh}</p>
+                <p key={extra.id} className="pl-3 text-sm">+ {extra.nameZh}</p>
               ))}
               {(line.noteZh || line.note) && <p className="pl-3 font-bold">备注: {line.noteZh ?? line.note}</p>}
             </div>
@@ -222,10 +223,10 @@ export default function ReceiptPage() {
         .receipt hr {
           border: none;
           border-top: 1px dashed #000;
-          margin: 6px 0;
+          margin: 3px 0;
         }
         .receipt-copy p {
-          margin: 2px 0;
+          margin: 1px 0;
         }
         @media print {
           @page {
@@ -250,17 +251,13 @@ export default function ReceiptPage() {
             font-size: 20px;
             font-weight: 700;
             color: #000;
+            line-height: 1.2;
           }
           .no-print {
             display: none;
           }
           .page-break {
             page-break-after: always;
-          }
-          .kitchen-copy p,
-          .kitchen-copy div {
-            font-size: 60px;
-            font-weight: 700;
           }
         }
       `}</style>
