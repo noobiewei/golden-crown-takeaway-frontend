@@ -160,7 +160,7 @@ export default function ReceiptPage() {
         <div className="page-break" />
 
         {/* Kitchen copy — Chinese only */}
-        <div className="receipt-copy kitchen-copy">
+        <div className="receipt-copy">
           <p className="text-center font-bold text-xl">金冠外卖 厨房单</p>
           <hr />
           <p>单号 #{order.id} &middot; {createdAt}</p>
@@ -243,21 +243,6 @@ export default function ReceiptPage() {
           }
           .page-break {
             page-break-after: always;
-          }
-          /* Kitchen copy needs to be readable at a glance from across a hot,
-             busy kitchen — much bigger and bolder than the customer copy.
-             Targeting descendants directly (not just .kitchen-copy itself)
-             is what actually overrides the Tailwind text-lg/text-xl classes
-             already on those elements, since inheriting a font-size from an
-             ancestor never wins over an explicit rule on the element itself. */
-          .kitchen-copy p,
-          .kitchen-copy div {
-            font-size: 40px;
-            font-weight: 700;
-            line-height: 1.3;
-          }
-          .kitchen-copy > p:first-child {
-            font-size: 48px;
           }
         }
       `}</style>
