@@ -95,13 +95,13 @@ export default function ReceiptPage() {
           <hr />
           {order.items.map((line) => (
             <div key={line.id} className="mb-1">
-              <div>
-                {line.quantity}x {line.menuItem.name} {line.menuItem.nameZh}
-              </div>
+              <div>{line.quantity}x {line.menuItem.name}</div>
+              <div>{line.menuItem.nameZh}</div>
               <div className="text-right">£{(line.priceAtOrder * line.quantity).toFixed(2)}</div>
               {line.extras.map((extra) => (
                 <div key={extra.id} className="pl-3">
-                  <div>+ {extra.name} {extra.nameZh}</div>
+                  <div>+ {extra.name}</div>
+                  <div>{extra.nameZh}</div>
                   <div className="text-right">£{extra.priceAtOrder.toFixed(2)}</div>
                 </div>
               ))}
