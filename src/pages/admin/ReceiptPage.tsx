@@ -84,9 +84,9 @@ export default function ReceiptPage() {
         {/* Customer copy — English + Chinese */}
         {showCustomer && (
         <div className="receipt-copy">
-          <p className="text-center font-bold text-sm">GOLDEN CROWN</p>
-          <p className="text-center font-bold text-xl">金冠外卖</p>
-          <p className="text-center">Chinese Takeaway</p>
+          <p className="text-center font-bold">
+            <span className="text-sm">GOLDEN CROWN</span> <span className="text-xl">金冠外卖</span>
+          </p>
           <p className="text-center">199 St. Albans Road, North Watford, WD24 5BH</p>
           <p className="text-center">Tel: (01923) 237483</p>
           <hr />
@@ -191,9 +191,9 @@ export default function ReceiptPage() {
           <hr />
           {order.items.map((line) => (
             <div key={line.id} className="mb-1">
-              <p className="text-sm">{line.quantity}x {line.menuItem.nameZh}</p>
+              <p className="kitchen-item-zh">{line.quantity}x {line.menuItem.nameZh}</p>
               {line.extras.map((extra) => (
-                <p key={extra.id} className="pl-3 text-sm">+ {extra.nameZh}</p>
+                <p key={extra.id} className="pl-3 kitchen-item-zh">+ {extra.nameZh}</p>
               ))}
               {(line.noteZh || line.note) && <p className="pl-3 font-bold">备注: {line.noteZh ?? line.note}</p>}
             </div>
@@ -258,6 +258,10 @@ export default function ReceiptPage() {
           }
           .page-break {
             page-break-after: always;
+          }
+          .kitchen-item-zh {
+            font-size: 40px;
+            font-weight: 700;
           }
         }
       `}</style>
