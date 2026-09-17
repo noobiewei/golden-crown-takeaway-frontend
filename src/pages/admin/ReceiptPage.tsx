@@ -85,7 +85,7 @@ export default function ReceiptPage() {
         {showCustomer && (
         <div className="receipt-copy">
           <p className="text-center font-bold">
-            <span className="text-sm">GOLDEN CROWN</span> <span className="text-xl">金冠外卖</span>
+            <span className="text-sm">GOLDEN CROWN</span> <span className="text-xl">金冠</span>
           </p>
           <p className="text-center">199 St. Albans Road, North Watford, WD24 5BH</p>
           <p className="text-center">Tel: (01923) 237483</p>
