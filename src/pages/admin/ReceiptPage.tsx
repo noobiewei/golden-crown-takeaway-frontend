@@ -177,9 +177,8 @@ export default function ReceiptPage() {
           )}
           <hr />
           {order.items.map((line) => (
-            <div key={line.id} className="mb-1 kitchen-item">
-              <p className="text-lg">{line.quantity}x</p>
-              <p className="text-lg">{line.menuItem.nameZh}</p>
+            <div key={line.id} className="mb-1">
+              <p className="text-lg">{line.quantity}x {line.menuItem.nameZh}</p>
               {line.extras.map((extra) => (
                 <p key={extra.id} className="pl-3">+ {extra.nameZh}</p>
               ))}
@@ -259,14 +258,6 @@ export default function ReceiptPage() {
           }
           .kitchen-copy > p:first-child {
             font-size: 48px;
-          }
-          /* Quantity and dish name print on separate lines (see JSX) so
-             neither is ever the widest line on the ticket — a line that
-             brushes the printable width can get silently shrunk by the
-             print driver, which is why this was printing smaller than
-             everything around it despite the font-size being correct. */
-          .kitchen-item p {
-            font-size: 44px;
           }
         }
       `}</style>
