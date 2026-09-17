@@ -246,7 +246,7 @@ export default function ReceiptPage() {
           }
           .kitchen-copy p,
           .kitchen-copy div {
-            font-size: 42px;
+            font-size: 60px;
             font-weight: 700;
           }
         }
