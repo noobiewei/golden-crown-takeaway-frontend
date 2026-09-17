@@ -160,7 +160,7 @@ export default function ReceiptPage() {
         <div className="page-break" />
 
         {/* Kitchen copy — Chinese only */}
-        <div className="receipt-copy">
+        <div className="receipt-copy kitchen-copy">
           <p className="text-center font-bold text-xl">金冠外卖 厨房单</p>
           <hr />
           <p>单号 #{order.id} &middot; {createdAt}</p>
@@ -243,6 +243,11 @@ export default function ReceiptPage() {
           }
           .page-break {
             page-break-after: always;
+          }
+          .kitchen-copy p,
+          .kitchen-copy div {
+            font-size: 42px;
+            font-weight: 700;
           }
         }
       `}</style>
