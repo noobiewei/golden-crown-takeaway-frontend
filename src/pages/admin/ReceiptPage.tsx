@@ -22,6 +22,15 @@ export default function ReceiptPage() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const autoprint = searchParams.get('autoprint') === '1';
+  // Printing customer+kitchen copies as one job only lets the printer cut
+  // once, at the very end — many drivers ignore the CSS page-break between
+  // them. Passing ?copy=customer or ?copy=kitchen renders just that one
+  // copy, so the print-agent can send them as two separate jobs and get a
+  // clean cut after each. No param (manual "Print Receipt" clicks) still
+  // prints both together in one job.
+  const copy = searchParams.get('copy');
+  const showCustomer = copy !== 'kitchen';
+  const showKitchen = copy !== 'customer';
   const hasAutoprinted = useRef(false);
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,6 +82,7 @@ export default function ReceiptPage() {
 
       <div className="receipt bg-white text-black">
         {/* Customer copy — English + Chinese */}
+        {showCustomer && (
         <div className="receipt-copy">
           <p className="text-center font-bold text-xl">GOLDEN CROWN 金冠外卖</p>
           <p className="text-center">Chinese Takeaway</p>
@@ -156,10 +166,12 @@ export default function ReceiptPage() {
             {order.paymentStatus === 'PAID' ? 'PAID' : 'UNPAID'}
           </p>
         </div>
+        )}
 
-        <div className="page-break" />
+        {showCustomer && showKitchen && <div className="page-break" />}
 
         {/* Kitchen copy — Chinese only */}
+        {showKitchen && (
         <div className="receipt-copy kitchen-copy">
           <p className="text-center font-bold text-xl">金冠外卖 厨房单</p>
           <hr />
@@ -198,6 +210,7 @@ export default function ReceiptPage() {
             </>
           )}
         </div>
+        )}
       </div>
 
       <style>{`
