@@ -95,14 +95,18 @@ export default function ReceiptPage() {
           <hr />
           {order.items.map((line) => (
             <div key={line.id} className="mb-1">
-              <div>{line.quantity}x {line.menuItem.name}</div>
+              <div className="flex justify-between gap-2">
+                <span>{line.quantity}x {line.menuItem.name}</span>
+                <span>£{(line.priceAtOrder * line.quantity).toFixed(2)}</span>
+              </div>
               <div>{line.menuItem.nameZh}</div>
-              <div className="text-right">£{(line.priceAtOrder * line.quantity).toFixed(2)}</div>
               {line.extras.map((extra) => (
                 <div key={extra.id} className="pl-3">
-                  <div>+ {extra.name}</div>
+                  <div className="flex justify-between gap-2">
+                    <span>+ {extra.name}</span>
+                    <span>£{extra.priceAtOrder.toFixed(2)}</span>
+                  </div>
                   <div>{extra.nameZh}</div>
-                  <div className="text-right">£{extra.priceAtOrder.toFixed(2)}</div>
                 </div>
               ))}
               {line.note && (
@@ -173,8 +177,9 @@ export default function ReceiptPage() {
           )}
           <hr />
           {order.items.map((line) => (
-            <div key={line.id} className="mb-1">
-              <p className="text-lg">{line.quantity}x {line.menuItem.nameZh}</p>
+            <div key={line.id} className="mb-1 kitchen-item">
+              <p className="text-lg">{line.quantity}x</p>
+              <p className="text-lg">{line.menuItem.nameZh}</p>
               {line.extras.map((extra) => (
                 <p key={extra.id} className="pl-3">+ {extra.nameZh}</p>
               ))}
@@ -254,6 +259,14 @@ export default function ReceiptPage() {
           }
           .kitchen-copy > p:first-child {
             font-size: 48px;
+          }
+          /* Quantity and dish name print on separate lines (see JSX) so
+             neither is ever the widest line on the ticket — a line that
+             brushes the printable width can get silently shrunk by the
+             print driver, which is why this was printing smaller than
+             everything around it despite the font-size being correct. */
+          .kitchen-item p {
+            font-size: 44px;
           }
         }
       `}</style>
