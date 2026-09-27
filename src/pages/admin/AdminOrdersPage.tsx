@@ -144,6 +144,9 @@ export default function AdminOrdersPage() {
           <button onClick={loadOrders} className="text-brand-green font-medium hover:underline">
             Refresh
           </button>
+          <Link to="/admin/menu" className="text-brand-green font-medium hover:underline">
+            Menu Editor
+          </Link>
           <span className="text-brand-ink/60">Logged in as {username}</span>
           <button onClick={logout} className="text-brand-green font-medium hover:underline">
             Log out
