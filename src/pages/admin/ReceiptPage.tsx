@@ -83,7 +83,7 @@ export default function ReceiptPage() {
       <div className="receipt bg-white text-black">
         {/* Customer copy — English + Chinese */}
         {showCustomer && (
-        <div className="receipt-copy">
+        <div className="receipt-copy customer-copy">
           <p className="text-center font-bold">
             <span className="text-sm">GOLDEN CROWN</span> <span className="text-xl">金冠</span>
           </p>
@@ -93,21 +93,21 @@ export default function ReceiptPage() {
           <p>Order #{order.id} &middot; {createdAt}</p>
           <p>CUSTOMER COPY 客户收据</p>
           <hr />
-          <p>Name: {order.customerName}</p>
-          <p>Phone: {order.customerPhone}</p>
+          <p className="font-bold">Name: {order.customerName}</p>
+          <p className="font-bold">Phone: {order.customerPhone}</p>
           {order.orderType === 'DELIVERY' ? (
             <>
-              <p>Delivery to: {order.deliveryAddress}</p>
-              <p>Postcode: {order.deliveryPostcode}</p>
+              <p className="font-bold">Delivery to: {order.deliveryAddress}</p>
+              <p className="font-bold">Postcode: {order.deliveryPostcode}</p>
             </>
           ) : (
-            <p>Pickup 自取</p>
+            <p className="font-bold">Pickup 自取</p>
           )}
           <hr />
           {order.items.map((line) => (
             <div key={line.id} className="mb-1">
               <div className="flex justify-between gap-2">
-                <span className="text-sm">{line.quantity}x {line.menuItem.name}</span>
+                <span className="text-sm font-bold">{line.quantity}x {line.menuItem.name}</span>
                 <span>£{(line.priceAtOrder * line.quantity).toFixed(2)}</span>
               </div>
               <div>{line.menuItem.nameZh}</div>
@@ -260,8 +260,15 @@ export default function ReceiptPage() {
             page-break-after: always;
           }
           .kitchen-item-zh {
-            font-size: 40px;
+            font-size: 32px;
             font-weight: 700;
+          }
+          /* Customer copy is bold-by-default via .receipt above; reset to
+             normal weight here so only the elements with their own explicit
+             font-bold class (order details, item name, Total, PAID/UNPAID)
+             stay bold. */
+          .customer-copy {
+            font-weight: 400;
           }
         }
       `}</style>
